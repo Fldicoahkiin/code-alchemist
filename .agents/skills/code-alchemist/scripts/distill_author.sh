@@ -7,7 +7,7 @@ set -e
 
 # Default values
 REPO=""
-AUTHOR=""
+AUTHORS=()  # Array to support multiple author patterns
 SINCE=""
 UNTIL=""
 MAX_COMMITS=100
@@ -30,7 +30,7 @@ Analyze a developer's coding style from Git history (POSIX shell version)
 
 Required:
   --repo PATH           Path to Git repository
-  --author PATTERN      Author name or email pattern
+  --author PATTERN      Author name or email pattern (repeatable, supports multiple names)
   --out DIR             Output directory for analysis results
 
 Optional:
@@ -45,6 +45,7 @@ Optional:
 Examples:
   $0 --repo ~/myproject --author "John Doe" --out ./analysis
   $0 --repo ~/myproject --author "john@example.com" --since "1 year ago" --include "src/**" --out ./analysis
+  $0 --repo ~/myproject --author "John" --author "john@example.com" --out ./analysis
 
 EOF
     exit 0
@@ -70,7 +71,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --author)
-            AUTHOR="$2"
+            AUTHORS+=("$2")
             shift 2
             ;;
         --since)
@@ -112,7 +113,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate required args
-if [[ -z "$REPO" || -z "$AUTHOR" || -z "$OUT_DIR" ]]; then
+if [[ -z "$REPO" || ${#AUTHORS[@]} -eq 0 || -z "$OUT_DIR" ]]; then
     log_error "Missing required arguments: --repo, --author, and --out are required"
     usage
 fi
@@ -134,14 +135,23 @@ fi
 mkdir -p "$OUT_DIR"
 mkdir -p "$OUT_DIR/examples"
 
-log_info "Analyzing commits by: $AUTHOR"
+# Join authors for display
+AUTHOR_DISPLAY="${AUTHORS[0]}"
+for ((i=1; i<${#AUTHORS[@]}; i++)); do
+    AUTHOR_DISPLAY="${AUTHOR_DISPLAY}, ${AUTHORS[$i]}"
+done
+
+log_info "Analyzing commits by: $AUTHOR_DISPLAY"
 log_info "Repository: $REPO"
 log_info "Output: $OUT_DIR"
 
-# Build git log command
+# Build git log command with multiple author support
+# Add each author as a separate --author flag (git treats multiple --author as OR)
 git_log_opts=()
-git_log_opts+=("--author=$AUTHOR")
-git_log_opts+=("--pretty=format:%H|%an|%ae|%ad|%s")
+for author in "${AUTHORS[@]}"; do
+    git_log_opts+=("--author=$author")
+done
+git_log_opts+=("--pretty=format:%H|%an|%ae|%ad|%s%n")
 git_log_opts+=("--date=short")
 
 if [[ -n "$SINCE" ]]; then
@@ -176,7 +186,7 @@ fi
 total_commits=$(wc -l < "$commits_file" | tr -d ' ')
 
 if [[ "$total_commits" -eq 0 ]]; then
-    log_error "No commits found for author: $AUTHOR"
+    log_error "No commits found for author(s): $AUTHOR_DISPLAY"
     rm -f "$commits_file"
     exit 1
 fi
@@ -311,7 +321,7 @@ echo "Generating summary.json..."
 {
     echo "{"
     echo "  \"repo\": \"$(json_escape "$REPO")\","
-    echo "  \"author\": \"$(json_escape "$AUTHOR")\","
+    echo "  \"author\": \"$(json_escape "$AUTHOR_DISPLAY")\","
     echo "  \"since\": \"$(json_escape "${SINCE:-(beginning)}")\","
     echo "  \"until\": \"$(json_escape "${UNTIL:-(now)}")\","
     echo "  \"total_commits\": $total_commits,"
@@ -411,7 +421,7 @@ echo "Generating summary.md..."
     echo "| Metric | Value |"
     echo "|--------|-------|"
     echo "| Repository | \`$REPO\` |"
-    echo "| Author | $AUTHOR |"
+    echo "| Author | $AUTHOR_DISPLAY |"
     echo "| Time Range | ${SINCE:-beginning} → ${UNTIL:-now} |"
     echo "| Total Commits | $total_commits |"
     echo "| Lines Added | +$total_additions |"

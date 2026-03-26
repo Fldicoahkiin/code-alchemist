@@ -1,58 +1,65 @@
 # CodeAlchemist
 
-> The departed colleague hasn't truly left—they've been distilled into tokens, continuing to guide you in a new form.
+> 被毕业的同事其实并没有消失，他们只是被蒸馏成了 Token，换成另一种形式陪伴你。
 
-CodeAlchemist is a Claude Code Skill that learns a developer's coding style from Git commit history and distills it into an installable Skill. One command to analyze, generate, and install—ready to use immediately.
+CodeAlchemist 是一个 Claude Code Skill，用于从 Git 提交历史中学习开发者的编码习惯，并将其提炼成可安装的 Skill。一键完成分析、生成和安装，立即可用。
 
 <div align="center">
 
 [![POSIX Shell](https://img.shields.io/badge/POSIX-Shell-blue.svg)](https://www.gnu.org/software/bash/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-green.svg)](https://claude.ai/code)
+[![npm version](https://img.shields.io/npm/v/code-alchemist.svg)](https://www.npmjs.com/package/code-alchemist)
+
+[English Documentation](README.en.md)
 
 </div>
 
-## Overview
+## 项目介绍
 
-Every engineering team has members whose coding wisdom is invaluable—their naming conventions, architectural instincts, and testing habits shape the codebase. When they move on, that knowledge often leaves with them.
+每个工程团队都有成员，他们的编码智慧是无价的——命名约定、架构直觉、测试习惯，这些都塑造了代码库。当他们离开时，这些知识往往也随之而去。
 
-CodeAlchemist captures these repeatable engineering habits from Git history, preserving them as an actionable Skill that can be installed in any project.
+CodeAlchemist 从 Git 历史中捕获这些可重复的工程习惯，将其保存为可操作的 Skill，可以在任何项目中安装使用。
 
-## Features
+## 功能特点
 
-- **One-Command Distillation**: `analyze → generate → install` in a single workflow
-- **Interactive Installation**: Choose location (project/global), method (copy/symlink), and name
-- **Naming & Vocabulary**: Extract domain terms, variable naming patterns, type/function suffixes
-- **Structure & Boundaries**: Learn file organization, abstraction preferences, module boundaries
-- **Data & Control Flow**: Analyze state management, functional programming tendencies
-- **Error Handling & Observability**: Capture error patterns, logging habits, tracing practices
-- **Testing Habits**: Identify test coverage patterns, test types, regression strategies
-- **Comments & Documentation**: Learn comment style, magic number handling
-- **Commit Granularity**: Understand commit size preferences, refactoring separation
-- **Anti-Patterns**: Detect patterns the author consistently avoids
+- **一键炼成**: 在一个工作流中完成 `分析 → 生成 → 安装`
+- **交互式安装**: 可选择安装位置（项目/全局）、方式（复制/软链接）和名称
+- **命名与词汇**: 提取领域术语、变量命名模式、类型/函数后缀
+- **结构与边界**: 学习文件组织、抽象偏好、模块边界
+- **数据与控制流**: 分析状态管理、函数式编程倾向
+- **错误处理与可观测性**: 捕获错误模式、日志习惯、追踪实践
+- **测试习惯**: 识别测试覆盖模式、测试类型、回归策略
+- **注释与文档**: 学习注释风格、魔法数字处理
+- **提交粒度**: 理解提交大小偏好、重构分离
+- **反模式**: 检测作者一贯避免的模式
 
-## Quick Start
+## 快速开始
 
-### Installation
+### 安装
 
-#### Option 1: npx (Recommended)
+#### 方式 1: npx (推荐)
 
 ```bash
 npx code-alchemist
 ```
 
-#### Option 2: Manual Clone
+安装器会交互式询问：
+- 安装位置（当前项目 / 全局）
+- 安装方式（复制 / 软链接）
 
-Clone this repository into your Claude Code project's `.agents/skills/` directory:
+#### 方式 2: 手动克隆
+
+将本仓库克隆到你的 Claude Code 项目的 `.agents/skills/` 目录：
 
 ```bash
 cd .agents/skills
 git clone https://github.com/Fldicoahkiin/code-alchemist.git code-alchemist
 ```
 
-### One-Command Usage (Recommended)
+### 一键用法 (推荐)
 
-Simply tell Claude Code:
+直接告诉 Claude Code：
 
 ```
 把张三炼成 skill
@@ -60,16 +67,16 @@ Simply tell Claude Code:
 把 senior-dev 的习惯保存成 skill
 ```
 
-Claude will:
-1. Run the analysis script
-2. Read representative code samples
-3. Generate a complete Skill
-4. Ask for installation preferences
-5. Install and confirm
+Claude 将会：
+1. 运行分析脚本
+2. 读取代表性代码样本
+3. 生成完整的 Skill
+4. 询问安装偏好
+5. 安装并确认
 
-### Manual Analysis (Advanced)
+### 手动分析 (高级)
 
-If you prefer to run analysis separately:
+如果你希望单独运行分析：
 
 ```bash
 bash .agents/skills/code-alchemist/scripts/distill_author.sh \
@@ -79,152 +86,154 @@ bash .agents/skills/code-alchemist/scripts/distill_author.sh \
   --out ./analysis-output
 ```
 
-Then in Claude Code:
+然后在 Claude Code 中：
 
 ```
 基于 ./analysis-output 生成 skill
 ```
 
-### Script Options
+### 脚本选项
 
 ```bash
 bash .agents/skills/code-alchemist/scripts/distill_author.sh \
-  --repo /path/to/repo \          # Required: target repository
-  --author "name|email" \          # Required: author identifier
-  --since "6 months ago" \         # Optional: start date
-  --until "1 month ago" \          # Optional: end date
-  --include "src/**" \             # Optional: include paths (repeatable)
-  --exclude "src/generated/**" \   # Optional: exclude paths (repeatable)
-  --max-commits 100 \              # Optional: limit commits (default: 100)
-  --max-examples 10 \              # Optional: example commits (default: 10)
-  --out /path/to/output            # Required: output directory
+  --repo /path/to/repo \          # 必需: 目标仓库
+  --author "name|email" \          # 必需: 作者标识
+  --since "6 months ago" \         # 可选: 开始日期
+  --until "1 month ago" \          # 可选: 结束日期
+  --include "src/**" \             # 可选: 包含路径 (可重复)
+  --exclude "src/generated/**" \   # 可选: 排除路径 (可重复)
+  --max-commits 100 \              # 可选: 限制提交数 (默认: 100)
+  --max-examples 10 \              # 可选: 示例提交数 (默认: 10)
+  --out /path/to/output            # 必需: 输出目录
 ```
 
-## Output Files
+## 输出文件
 
-| File | Description |
-|------|-------------|
-| `summary.md` | Human-readable analysis report |
-| `summary.json` | Structured statistics |
-| `file_stats.csv` | File-level modification statistics |
-| `example_commits.json` | Index of representative commits |
-| `examples/*.diff` | Patch files of representative commits |
-| `live_files.txt` | List of representative files that still exist |
+| 文件 | 说明 |
+|------|------|
+| `summary.md` | 人类可读的分析报告 |
+| `summary.json` | 结构化统计数据 |
+| `file_stats.csv` | 文件级别的修改统计 |
+| `example_commits.json` | 代表性提交索引 |
+| `examples/*.diff` | 代表性提交的补丁文件 |
+| `live_files.txt` | 当前仍存在的代表性文件列表 |
 
-## Why Shell?
+## 为什么用 Shell？
 
-The core analysis script `distill_author.sh` is written in POSIX Shell because:
+核心分析脚本 `distill_author.sh` 使用 POSIX Shell 编写，原因如下：
 
-1. **Zero Dependencies**: Uses only standard Unix tools (git, grep, sed, awk)
-2. **Universal Availability**: Works on any system with Bash 3.2+ (including macOS default)
-3. **Git Native**: Direct integration with git commands via subprocess
-4. **Performance**: Efficient text processing for large repositories
-5. **Simplicity**: Single file, no package management needed
+1. **零依赖**: 仅使用标准 Unix 工具 (git, grep, sed, awk)
+2. **普遍可用**: 兼容任何有 Bash 3.2+ 的系统（包括 macOS 默认版本）
+3. **Git 原生**: 通过子进程直接集成 git 命令
+4. **性能**: 对大型仓库进行高效的文本处理
+5. **简洁**: 单文件，无需包管理
 
-## Interactive Installation
+## 交互式安装
 
-When generating a Skill, Claude Code will ask:
+生成 Skill 时，Claude Code 会询问：
 
-> **Analysis complete. Ready to install the skill. Please confirm:**
+> **分析完成。准备安装 skill，请确认：**
 >
-> **1. Install Location** - default: current project
-> - [x] Current project ./.agents/skills/
-> - [ ] Claude global ~/.claude/skills/
-> - [ ] Other path _____________
+> **1. 安装位置** - 默认: 当前项目
+> - [x] 当前项目 ./.agents/skills/
+> - [ ] Claude 全局 ~/.claude/skills/
+> - [ ] 其他路径 _____________
 >
-> **2. Install Method** - default: copy
-> - [x] Copy
-> - [ ] Symlink
+> **2. 安装方式** - 默认: 复制
+> - [x] 复制
+> - [ ] 软链接
 >
-> **3. Skill Name** - default: `<author>-style`
+> **3. Skill 名称** - 默认: `<author>-style`
 > _____________
 
-After confirmation, the Skill is installed and ready to use:
+确认后，Skill 即安装完成，可立即使用：
 
 ```
 使用 <author>-style 创建一个用户列表组件
 按照 <author> 的习惯重构这段代码
 ```
 
-## Generated Skill Structure
+## 生成的 Skill 结构
 
-A generated Skill contains:
+生成的 Skill 包含：
 
 ```
 .agents/skills/<author>-style/
-├── SKILL.md              # Style rules and patterns
+├── SKILL.md              # 风格规则和模式
 ├── evals/
-│   └── evals.json        # Test cases for validation
-└── README.md             # Usage guide
+│   └── evals.json        # 验证测试用例
+└── README.md             # 使用指南
 ```
 
-## Use Cases
+## 使用场景
 
-### Preserving Expert Knowledge
+### 保留专家知识
 
-When a key team member departs, extract their engineering style to help new members learn the team's implicit conventions.
+当核心团队成员离职时，提取他们的工程风格，帮助新成员快速学习团队的「隐形规范」。
 
-### Standardizing Team Style
+### 统一团队代码风格
 
-Analyze the most senior member's commit history to generate team coding standards, ensuring newcomers write code that fits the team's habits.
+分析团队中最资深成员的提交历史，生成团队代码规范，确保新人代码符合团队习惯。
 
-### Creating Personal Coding Assistants
+### 创建个人编码助手
 
-Distill your own coding style into a skill that Claude Code can use to maintain consistency across your personal projects.
+将自己的代码风格提炼成 skill，让 Claude Code 在你的个人项目中保持一致的编码风格。
 
-### Cross-Project Consistency
+### 跨项目一致性
 
-Install the same Skill in multiple projects to maintain consistent coding style across your entire codebase.
+在多个项目中安装相同的 Skill，在整个代码库中保持一致的编码风格。
 
-## Project Structure
+## 项目结构
 
 ```
 code-alchemist/
-├── SKILL.md                              # Skill definition
-├── scripts/
-│   ├── distill_author.sh                 # Core analysis script (POSIX Shell)
-│   └── validate_skill.sh                 # Skill validation script
-├── agents/
-│   └── openai.yaml                       # Agent configuration
-├── references/
-│   ├── distillation-dimensions.md        # 8-dimension extraction checklist
-│   └── output-contract.md                # Output format specifications
-├── templates/
-│   ├── skill-template.md                 # Template for generated skills
-│   └── agents-snippet.md                 # Template for AGENTS.md snippets
-├── examples/
-│   ├── example-author-style.md           # Example: React/TypeScript/HeroUI
-│   ├── sample-summary.json               # Example analysis output
-│   └── sample-summary.zh.md              # Example report (Chinese)
-└── evals/
-    └── evals.json                        # Evaluation test cases
+├── .agents/skills/code-alchemist/
+│   ├── SKILL.md                              # Skill 定义文件
+│   ├── scripts/
+│   │   ├── distill_author.sh                 # 核心分析脚本 (POSIX Shell)
+│   │   └── validate_skill.sh                 # Skill 验证脚本
+│   ├── references/
+│   │   ├── distillation-dimensions.md        # 8 维度提取清单
+│   │   └── output-contract.md                # 输出格式规范
+│   ├── templates/
+│   │   ├── skill-template.md                 # Skill 生成模板
+│   │   └── agents-snippet.md                 # AGENTS.md 片段模板
+│   └── evals/
+│       └── evals.json                        # 评估测试用例
+├── installer/                                # npx 安装器包
+│   ├── install.js                            # 交互式安装脚本
+│   ├── package.json                          # npm 包清单
+│   └── README.md                             # 安装器文档
+├── LICENSE                                   # MIT 许可证
+├── README.md                                 # 本文档（中文）
+└── README.en.md                              # 英文文档
 ```
 
-## Distillation Dimensions
+## 提取维度
 
-Based on `references/distillation-dimensions.md`, we extract developer style across 8 dimensions:
+根据 `references/distillation-dimensions.md`，我们从以下 8 个维度提取开发者风格：
 
-1. **Naming & Vocabulary** - Domain terms, variable name length, naming suffixes
-2. **Structure & Boundaries** - File responsibilities, inline vs extracted logic
-3. **Data & Control Flow** - State management, pure function preference
-4. **Error Handling & Observability** - Error patterns, logging, tracing
-5. **Testing Habits** - Test density, test types, regression coverage
-6. **Comments & Documentation** - Comment style, magic number handling
-7. **Change Granularity** - Commit size, refactoring separation, verb usage
-8. **Explicit Anti-Patterns** - Patterns the author consistently avoids
+1. **命名与词汇** - 领域术语、变量命名长度、命名后缀
+2. **结构与边界** - 文件职责、逻辑内联 vs 提取
+3. **数据与控制流** - 状态管理、纯函数偏好
+4. **错误处理与可观测性** - 错误模式、日志、追踪
+5. **测试习惯** - 测试密度、测试类型、回归覆盖
+6. **注释与文档** - 注释风格、魔法数字处理
+7. **提交粒度** - 提交大小、重构分离、动词使用
+8. **显式反模式** - 作者一贯避免的模式
 
-## Notes
+## 注意事项
 
-- Result reliability depends on the target author's commit count and consistency
-- Recommend analyzing 20+ commits for reliable results
-- Trust repeated patterns over one-off events
-- Avoid capturing personal tone or emotional expressions
-- When historical code conflicts with current code, follow the current codebase
-- Generated Skills should be reviewed before team-wide deployment
+- 分析结果的可信度取决于目标作者的提交数量和一致性
+- 建议至少分析 20+ 个提交以获得可靠结果
+- 优先信任重复出现的模式，而非一次性事件
+- 避免捕获个人语气或情绪表达
+- 当历史代码与当前代码冲突时，以当前代码为准
+- 生成的 Skill 在团队部署前应经过审核
 
-## Example
+## 示例
 
-### Analyzing a Senior React Developer's Style
+### 分析 React 项目资深开发者的风格
 
 ```bash
 bash scripts/distill_author.sh \
@@ -236,19 +245,35 @@ bash scripts/distill_author.sh \
   --out ./senior-dev-style
 ```
 
-Then in Claude Code:
+然后在 Claude Code 中：
 
 ```
 使用 code-alchemist skill 基于 ./senior-dev-style 分析结果生成 skill
 ```
 
-Or simply:
+或简单地说：
 
 ```
 把 senior-dev 炼成 skill
 ```
 
-## License
+## 开发者信息
+
+### 发布到 npm
+
+安装器作为独立的 npm 包发布：
+
+```bash
+cd installer
+npm login
+npm publish
+```
+
+### 发布到 GitHub
+
+主仓库包含完整的 skill 代码。安装器从 GitHub raw URLs 下载文件。
+
+## 许可证
 
 [MIT](LICENSE)
 
@@ -256,8 +281,6 @@ Or simply:
 
 <div align="center">
 
-**Preserve every great engineer as transferable tokens of wisdom.**
-
-[中文文档](README.zh.md)
+**将每一位优秀的工程师，都变成可传承的智慧 Token。**
 
 </div>

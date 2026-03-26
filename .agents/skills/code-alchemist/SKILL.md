@@ -1,6 +1,12 @@
 ---
 name: code-alchemist
 description: 'Distill one developer''s code style from git commit history into a reusable Claude Code Skill. Use when asked to "炼成skill", "analyze coding style", "preserve someone''s habits", or when you need to turn a developer''s patterns into a shareable skill that can be installed in any project.'
+license: MIT
+metadata:
+  author: Flacier
+  version: 1.0.0
+  tags: [git, code-style, developer-tools, claude-code]
+  repository: https://github.com/Fldicoahkiin/code-alchemist
 ---
 
 # CodeAlchemist
