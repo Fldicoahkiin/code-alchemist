@@ -116,6 +116,7 @@ done
 if [[ -z "$REPO" || ${#AUTHORS[@]} -eq 0 || -z "$OUT_DIR" ]]; then
     log_error "Missing required arguments: --repo, --author, and --out are required"
     usage
+    exit 1
 fi
 
 # Validate repo exists and is git repo
@@ -302,13 +303,17 @@ sort -t'|' -k2 -nr "$ext_stats_tmp" > "$exts_sorted" 2>/dev/null || true
 # Analyze commit message patterns
 log_info "Analyzing commit message patterns..."
 
-# Count commit patterns (clean output with printf to remove newlines)
-feat_count=$(printf '%d' "$(grep -cE "^(feat|feature)(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
-fix_count=$(printf '%d' "$(grep -cE "^fix(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
-docs_count=$(printf '%d' "$(grep -cE "^docs?(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
-test_count=$(printf '%d' "$(grep -cE "^test(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
-refactor_count=$(printf '%d' "$(grep -cE "^refactor(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
-chore_count=$(printf '%d' "$(grep -cE "^chore(\([^)]*\))?:" "$commits_file" 2>/dev/null || echo 0)" 2>/dev/null || echo 0)
+# Count commit patterns by extracting subject field (5th pipe-delimited field)
+subjects_file="$OUT_DIR/.subjects.tmp"
+awk -F'|' '{print $5}' "$commits_file" > "$subjects_file"
+
+feat_count=$(grep -cE "^(feat|feature)(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || feat_count=0
+fix_count=$(grep -cE "^fix(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || fix_count=0
+docs_count=$(grep -cE "^docs?(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || docs_count=0
+test_count=$(grep -cE "^test(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || test_count=0
+refactor_count=$(grep -cE "^refactor(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || refactor_count=0
+chore_count=$(grep -cE "^chore(\([^)]*\))?!?:" "$subjects_file" 2>/dev/null) || chore_count=0
+rm -f "$subjects_file"
 
 # JSON escape helper
 json_escape() {

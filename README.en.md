@@ -6,10 +6,10 @@ CodeAlchemist is a Claude Code Skill that learns a developer's coding style from
 
 <div align="center">
 
-[![POSIX Shell](https://img.shields.io/badge/POSIX-Shell-blue.svg)](https://www.gnu.org/software/bash/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-green.svg)](https://claude.ai/code)
-[![npm version](https://img.shields.io/npm/v/code-alchemist.svg)](https://www.npmjs.com/package/code-alchemist)
+[![POSIX Shell](https://img.shields.io/badge/POSIX_Shell-compatible-1a1a2e?style=flat-square&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
+[![License](https://img.shields.io/badge/license-MIT-16213e?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-e94560?style=flat-square)](https://claude.ai/code)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-installable-0f3460?style=flat-square&logo=npm&logoColor=white)](https://agentskills.io)
 
 [中文文档](README.md)
 
@@ -38,19 +38,26 @@ CodeAlchemist captures these repeatable engineering habits from Git history, pre
 
 ### Installation
 
-#### Option 1: npx (Recommended)
+#### Option 1: npx skills add (Recommended)
 
 ```bash
-npx code-alchemist
+npx skills add Fldicoahkiin/code-alchemist
 ```
 
-This will interactively prompt you for:
-- Install location (current project / global)
-- Install method (copy / symlink)
+Common options:
+
+```bash
+# Install globally
+npx skills add Fldicoahkiin/code-alchemist -g
+
+# Target a specific agent
+npx skills add Fldicoahkiin/code-alchemist -a claude-code
+
+# List available skills
+npx skills add Fldicoahkiin/code-alchemist --list
+```
 
 #### Option 2: Manual Clone
-
-Clone this repository into your Claude Code project's `.agents/skills/` directory:
 
 ```bash
 cd .agents/skills
@@ -259,19 +266,9 @@ Or simply:
 
 ## For Developers
 
-### Publishing to npm
+Users install via `npx skills add Fldicoahkiin/code-alchemist`, which pulls skill files from this GitHub repository.
 
-The installer is published as a separate npm package:
-
-```bash
-cd installer
-npm login
-npm publish
-```
-
-### Publishing to GitHub
-
-The main repository contains the full skill code. The installer downloads files from GitHub raw URLs.
+Keep the `.agents/skills/code-alchemist/` directory up to date with the latest skill files.
 
 ## License
 

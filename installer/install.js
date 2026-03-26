@@ -129,6 +129,23 @@ async function interactiveInstall(isUpdate) {
   }
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
+function downloadWithRetry(url, localPath, maxRetries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      execSync(`curl -fsSL --connect-timeout 10 --max-time 30 "${url}" -o "${localPath}" 2>/dev/null`);
+      return true;
+    } catch (e) {
+      if (attempt < maxRetries) {
+        execSync(`sleep ${RETRY_DELAY_MS / 1000}`);
+      }
+    }
+  }
+  return false;
+}
+
 function performInstall(installDir, isSymlink, isUpdate) {
   console.log(`\n${isUpdate ? 'Updating' : 'Installing'} CodeAlchemist...`);
   console.log(`Location: ${installDir}`);
@@ -158,12 +175,11 @@ function performInstall(installDir, isSymlink, isUpdate) {
     const localPath = path.join(installDir, file);
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
 
-    try {
-      execSync(`curl -fsSL "${url}" -o "${localPath}" 2>/dev/null`);
+    if (downloadWithRetry(url, localPath)) {
       console.log(`  [OK] ${file}`);
       successCount++;
-    } catch (e) {
-      console.log(`  [ERROR] ${file} (download failed)`);
+    } else {
+      console.log(`  [ERROR] ${file} (download failed after ${MAX_RETRIES} attempts)`);
     }
   }
 
