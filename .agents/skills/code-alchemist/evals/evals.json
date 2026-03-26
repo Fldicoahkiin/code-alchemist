@@ -4,22 +4,23 @@
     {
       "id": 1,
       "prompt": "分析这个仓库中用户 'John Doe' 在过去一年的代码提交风格，生成一个 skill 文件",
-      "expected_output": "运行 distill_author.py 脚本，分析提交历史，生成包含命名习惯、结构偏好、测试风格的 profile",
+      "expected_output": "运行 distill_author.sh 脚本，分析提交历史，输出 summary.json / summary.md / file_stats.csv / example_commits.json / live_files.txt，然后基于这些数据归纳风格规则并生成 SKILL.md",
       "assertions": [
-        "summary.json 文件存在且包含 commit_count 字段",
+        "summary.json 文件存在且包含 analyzed_commits 字段",
         "summary.md 文件存在且包含作者分析概览",
-        "examples 目录包含代表性提交的 diff 文件",
+        "file_stats.csv 包含文件级变更统计",
+        "example_commits.json 包含代表性提交",
         "live_files.txt 包含当前仍存在的文件列表"
       ]
     },
     {
       "id": 2,
-      "prompt": "从分析结果生成一个 AGENTS.md 代码片段",
-      "expected_output": "根据 distill_author.py 的输出，生成符合 AGENTS.md 格式的代码风格指导",
+      "prompt": "从分析结果生成一个 SKILL.md 风格指导",
+      "expected_output": "基于 distill_author.sh 输出的 summary.json 和 live_files.txt，读取代表性文件后，生成符合 Agent Skills 规范的 SKILL.md",
       "assertions": [
         "输出包含命名偏好部分",
-        "输出包含错误处理模式",
-        "输出包含测试习惯描述",
+        "输出包含代码组织模式",
+        "输出包含 Applicability 范围",
         "每个规则都有对应的证据引用"
       ]
     },
@@ -30,28 +31,18 @@
       "assertions": [
         "file_stats.csv 只包含 src/ 路径下的文件",
         "top_directories 统计以 src 开头",
+        "命令使用 :(glob) pathspec 格式",
         "命令成功执行无报错"
       ]
     },
     {
       "id": 4,
-      "prompt": "为资深开发者 'Alice' 生成一个 copilot-instructions.md 片段",
-      "expected_output": "生成适用于 .github/copilot-instructions.md 的风格指导文件",
+      "prompt": "分析过去6个月内少于10个提交的作者风格",
+      "expected_output": "脚本输出低样本警告，仍然执行分析但标注置信度不足",
       "assertions": [
-        "输出包含适用的代码路径范围",
-        "输出包含具体的命名约定",
-        "输出明确说明不要过度应用的情况",
-        "格式符合 GitHub Copilot 指令规范"
-      ]
-    },
-    {
-      "id": 5,
-      "prompt": "分析过去6个月内少于20个提交的作者风格",
-      "expected_output": "正确执行但提示证据不足，建议扩大时间范围",
-      "assertions": [
-        "summary.md 包含证据不足的警告",
-        "输出了可用的统计数据",
-        "给出了改进建议"
+        "脚本输出 [WARN] Low sample size 警告",
+        "summary.json 仍然生成且数据正确",
+        "输出建议扩大时间范围或添加更多 --author 模式"
       ]
     }
   ]

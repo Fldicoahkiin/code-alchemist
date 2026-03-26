@@ -152,7 +152,7 @@ git_log_opts=()
 for author in "${AUTHORS[@]}"; do
     git_log_opts+=("--author=$author")
 done
-git_log_opts+=("--pretty=format:%H|%an|%ae|%ad|%s%n")
+git_log_opts+=("--pretty=format:%H|%an|%ae|%ad|%s")
 git_log_opts+=("--date=short")
 
 if [[ -n "$SINCE" ]]; then
@@ -166,11 +166,11 @@ fi
 # Build pathspec filters
 pathspec_args=()
 for pattern in "${INCLUDE_PATTERNS[@]}"; do
-    pathspec_args+=("$pattern")
+    pathspec_args+=(":(glob)$pattern")
 done
 
 for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-    pathspec_args+=(":(exclude)$pattern")
+    pathspec_args+=(":(exclude,glob)$pattern")
 done
 
 # Get commits
@@ -184,6 +184,9 @@ else
     git log "${git_log_opts[@]}" 2>/dev/null | head -n "$MAX_COMMITS" > "$commits_file" || true
 fi
 
+# Filter empty lines from commits file
+sed -i '' '/^$/d' "$commits_file" 2>/dev/null || sed -i '/^$/d' "$commits_file"
+
 total_commits=$(wc -l < "$commits_file" | tr -d ' ')
 
 if [[ "$total_commits" -eq 0 ]]; then
@@ -193,6 +196,12 @@ if [[ "$total_commits" -eq 0 ]]; then
 fi
 
 log_info "Found $total_commits commits"
+
+LOW_SAMPLE_THRESHOLD=10
+if [[ "$total_commits" -lt "$LOW_SAMPLE_THRESHOLD" ]]; then
+    log_warn "Low sample size: only $total_commits commits found (< $LOW_SAMPLE_THRESHOLD)"
+    log_warn "Style conclusions may be unreliable. Consider expanding --since or adding more --author patterns."
+fi
 
 # Use temp files instead of associative arrays for Bash 3.2 compatibility
 file_stats_tmp="$OUT_DIR/.file_stats.tmp"

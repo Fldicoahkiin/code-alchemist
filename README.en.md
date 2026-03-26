@@ -6,7 +6,7 @@ CodeAlchemist is a Claude Code Skill that learns a developer's coding style from
 
 <div align="center">
 
-[![POSIX Shell](https://img.shields.io/badge/POSIX_Shell-compatible-1a1a2e?style=flat-square&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
+[![Bash 3.2+](https://img.shields.io/badge/Bash-3.2%2B-1a1a2e?style=flat-square&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 [![License](https://img.shields.io/badge/license-MIT-16213e?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-e94560?style=flat-square)](https://claude.ai/code)
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-installable-0f3460?style=flat-square&logo=npm&logoColor=white)](https://agentskills.io)
@@ -23,16 +23,13 @@ CodeAlchemist captures these repeatable engineering habits from Git history, pre
 
 ## Features
 
-- **One-Command Distillation**: `analyze → generate → install` in a single workflow
-- **Interactive Installation**: Choose location (project/global), method (copy/symlink), and name
-- **Naming & Vocabulary**: Extract domain terms, variable naming patterns, type/function suffixes
-- **Structure & Boundaries**: Learn file organization, abstraction preferences, module boundaries
-- **Data & Control Flow**: Analyze state management, functional programming tendencies
-- **Error Handling & Observability**: Capture error patterns, logging habits, tracing practices
-- **Testing Habits**: Identify test coverage patterns, test types, regression strategies
-- **Comments & Documentation**: Learn comment style, magic number handling
-- **Commit Granularity**: Understand commit size preferences, refactoring separation
-- **Anti-Patterns**: Detect patterns the author consistently avoids
+- **One-Command Distillation**: `analyze → synthesize → install` in a single workflow
+- **Interactive Installation**: Choose location (project/global) and skill name
+- **Evidence Extraction**: Script automatically extracts commit stats, file hotspots, directory distribution, diff samples, and live files
+- **Model Synthesis**: Based on extracted evidence, AI reads representative source files and synthesizes style rules across:
+  - Naming & vocabulary, structure & boundaries, data & control flow
+  - Error handling, testing habits, comment style
+  - Commit granularity, anti-patterns
 
 ## Quick Start
 
@@ -127,7 +124,7 @@ bash .agents/skills/code-alchemist/scripts/distill_author.sh \
 
 ## Why Shell?
 
-The core analysis script `distill_author.sh` is written in POSIX Shell because:
+The core analysis script `distill_author.sh` is written in Bash (compatible with 3.2+, the macOS default) because:
 
 1. **Zero Dependencies**: Uses only standard Unix tools (git, grep, sed, awk)
 2. **Universal Availability**: Works on any system with Bash 3.2+ (including macOS default)
@@ -146,11 +143,7 @@ When generating a Skill, Claude Code will ask:
 > - [ ] Claude global ~/.claude/skills/
 > - [ ] Other path _____________
 >
-> **2. Install Method** - default: copy
-> - [x] Copy
-> - [ ] Symlink
->
-> **3. Skill Name** - default: `<author>-style`
+> **2. Skill Name** - default: `<author>-style`
 > _____________
 
 After confirmation, the Skill is installed and ready to use:

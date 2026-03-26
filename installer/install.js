@@ -1,35 +1,36 @@
 #!/usr/bin/env node
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const readline = require('readline');
-const os = require('os');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
 
-function getGlobalSkillsDir() {
-  return path.join(os.homedir(), '.claude', 'skills');
-}
-
 function findProjectRoot() {
-  let current = process.cwd();
-  while (current !== '/') {
-    if (fs.existsSync(path.join(current, '.git')) ||
-        fs.existsSync(path.join(current, 'package.json'))) {
-      return current;
+  let dir = process.cwd();
+  while (dir !== path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'package.json'))) {
+      return dir;
     }
-    current = path.dirname(current);
+    dir = path.dirname(dir);
   }
   return null;
 }
 
+function getGlobalSkillsDir() {
+  const homeDir = process.env.HOME || process.env.USERPROFILE;
+  return path.join(homeDir, '.claude', 'skills');
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
-  return {
-    help: args.includes('--help') || args.includes('-h'),
-    update: args.includes('--update') || args.includes('-u')
-  };
+  const options = { help: false, update: false };
+  for (const arg of args) {
+    if (arg === '--help' || arg === '-h') options.help = true;
+    if (arg === '--update' || arg === '-u') options.update = true;
+  }
+  return options;
 }
 
 function showHelp() {
@@ -39,12 +40,11 @@ CodeAlchemist Installer
 Usage: npx code-alchemist [options]
 
 Options:
-  -u, --update    Update existing installation
-  -h, --help      Show this help message
+  -h, --help     Show help
+  -u, --update   Update existing installation
 
-Interactive installation will ask for:
-  - Install location (current project / global)
-  - Install method (copy / symlink)
+Note: The recommended install method is:
+  npx skills add Fldicoahkiin/code-alchemist
 `);
 }
 
@@ -105,23 +105,9 @@ async function interactiveInstall(isUpdate) {
       }
     }
 
-    console.log('\nSelect install method:');
-    console.log('  1) Copy (recommended)');
-    console.log('  2) Symlink (for development)');
-
-    let methodChoice;
-    while (true) {
-      const answer = await askQuestion(rl, '\nEnter choice (1 or 2): ');
-      if (answer === '1' || answer === '2') {
-        methodChoice = answer;
-        break;
-      }
-      console.log('Invalid choice, please enter 1 or 2');
-    }
-
     rl.close();
 
-    await performInstall(installDir, methodChoice === '2', isUpdate || exists);
+    await performInstall(installDir, isUpdate || exists);
 
   } catch (err) {
     rl.close();
@@ -146,10 +132,9 @@ function downloadWithRetry(url, localPath, maxRetries = MAX_RETRIES) {
   return false;
 }
 
-function performInstall(installDir, isSymlink, isUpdate) {
+function performInstall(installDir, isUpdate) {
   console.log(`\n${isUpdate ? 'Updating' : 'Installing'} CodeAlchemist...`);
-  console.log(`Location: ${installDir}`);
-  console.log(`Method: ${isSymlink ? 'Symlink' : 'Copy'}\n`);
+  console.log(`Location: ${installDir}\n`);
 
   if (fs.existsSync(installDir)) {
     fs.rmSync(installDir, { recursive: true, force: true });
@@ -159,13 +144,15 @@ function performInstall(installDir, isSymlink, isUpdate) {
 
   const files = [
     'SKILL.md',
+    'skill.lock.json',
     'evals/evals.json',
     'scripts/distill_author.sh',
     'scripts/validate_skill.sh',
     'references/distillation-dimensions.md',
     'references/output-contract.md',
     'templates/skill-template.md',
-    'templates/agents-snippet.md'
+    'templates/agents-snippet.md',
+    'agents/openai.yaml'
   ];
 
   let successCount = 0;
@@ -183,13 +170,14 @@ function performInstall(installDir, isSymlink, isUpdate) {
     }
   }
 
-  const distillScript = path.join(installDir, 'scripts', 'distill_author.sh');
-  const validateScript = path.join(installDir, 'scripts', 'validate_skill.sh');
-  if (fs.existsSync(distillScript)) {
-    fs.chmodSync(distillScript, 0o755);
-  }
-  if (fs.existsSync(validateScript)) {
-    fs.chmodSync(validateScript, 0o755);
+  // Set executable permission on shell scripts
+  const scriptDir = path.join(installDir, 'scripts');
+  if (fs.existsSync(scriptDir)) {
+    fs.readdirSync(scriptDir).forEach(file => {
+      if (file.endsWith('.sh')) {
+        fs.chmodSync(path.join(scriptDir, file), 0o755);
+      }
+    });
   }
 
   console.log(`\n[OK] ${isUpdate ? 'Update' : 'Installation'} complete!`);

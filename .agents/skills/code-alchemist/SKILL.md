@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: Flacier
   version: 1.0.0
-  tags: [git, code-style, developer-tools, claude-code]
+  tags: "git, code-style, developer-tools, claude-code"
   repository: https://github.com/Fldicoahkiin/code-alchemist
 ---
 
@@ -67,11 +67,7 @@ Chinese:
 > - [ ] Claude 全局 ~/.claude/skills/
 > - [ ] 其他路径 _____________
 >
-> **2. 安装方式** - 默认: 复制
-> - [x] 复制
-> - [ ] 软链接
->
-> **3. Skill 名称** - 默认: `<author>-style`
+> **2. Skill 名称** - 默认: `<author>-style`
 > _____________
 
 English:
@@ -82,11 +78,7 @@ English:
 > - [ ] Claude global ~/.claude/skills/
 > - [ ] Other path _____________
 >
-> **2. Install Method** - default: copy
-> - [x] Copy
-> - [ ] Symlink
->
-> **3. Skill Name** - default: `<author>-style`
+> **2. Skill Name** - default: `<author>-style`
 > _____________
 
 Wait for user confirmation before proceeding.
@@ -97,9 +89,8 @@ Based on user choices:
 ```
 [selected-location]/<skill-name>/
 ├── SKILL.md
-├── evals/
-│   └── evals.json
-└── README.md
+└── evals/
+    └── evals.json
 ```
 
 #### 4.3 Generate SKILL.md
@@ -170,8 +161,8 @@ Create at least 3 test cases:
 }
 ```
 
-#### 4.5 Generate README.md
-Brief usage guide for the generated skill.
+#### 4.5 (Optional) Generate README.md
+If the user explicitly requests it, create a brief usage guide for the generated skill. Otherwise, skip this step.
 
 ### Step 5: Install the Skill
 

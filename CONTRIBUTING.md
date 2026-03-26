@@ -12,26 +12,29 @@
 
 ## 代码规范
 
-- Python 代码遵循 PEP 8
-- 使用 `black` 格式化 Python 代码
-- 保持 SKILL.md 符合 Agent Skills 规范
-- 更新 evals.json 添加新的测试用例
+- Shell 脚本兼容 Bash 3.2+（macOS 默认版本）
+- 保持 SKILL.md 符合 [Agent Skills 规范](https://agentskills.io/specification)
+- 更新 `evals/evals.json` 添加新的测试用例
+- 禁止在脚本中使用 Bash 4+ 独有特性（如关联数组）
 
 ## 测试
 
 ```bash
 # 验证 SKILL.md 格式
-bash scripts/validate_skill.sh
+bash .agents/skills/code-alchemist/scripts/validate_skill.sh
 
-# 运行 Python 脚本测试
-python scripts/distill_author.py --help
+# 运行分析脚本
+bash .agents/skills/code-alchemist/scripts/distill_author.sh --help
+
+# 运行测试套件
+bash tests/run_tests.sh
 ```
 
 ## 报告问题
 
 提交 Issue 时请包含：
-- 使用的操作系统和版本
-- Python 版本 (`python --version`)
+- 使用的操作系统和 Bash 版本 (`bash --version`)
+- Git 版本 (`git --version`)
 - 复现步骤
 - 预期行为 vs 实际行为
 
