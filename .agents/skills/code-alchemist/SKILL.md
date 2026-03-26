@@ -4,7 +4,7 @@ description: 'Distill one developer''s code style from git commit history into a
 license: MIT
 metadata:
   author: Flacier
-  version: 1.0.0
+  version: 1.0.1
   tags: "git, code-style, developer-tools, claude-code"
   repository: https://github.com/Fldicoahkiin/code-alchemist
 ---
