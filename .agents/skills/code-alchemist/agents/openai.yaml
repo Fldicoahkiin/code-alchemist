@@ -1,0 +1,4 @@
+interface:
+  display_name: "CodeAlchemist"
+  short_description: "Distill one developer's commit habits into reusable guidance"
+  default_prompt: "Distill one developer's engineering style from git history and generate reusable skill rules, AGENTS.md guidance, or repository instructions."

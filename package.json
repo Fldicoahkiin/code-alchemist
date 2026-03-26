@@ -1,0 +1,17 @@
+{
+  "name": "code-alchemist",
+  "version": "1.0.0",
+  "description": "Distill developer coding style from Git history into reusable Claude Code Skills",
+  "scripts": {
+    "validate": "bash .agents/skills/code-alchemist/scripts/validate_skill.sh",
+    "test": "python -m pytest tests/ -v 2>/dev/null || echo 'No tests directory yet'"
+  },
+  "keywords": [
+    "claude-code",
+    "skill",
+    "git",
+    "code-style",
+    "developer-tools"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "code-alchemist",
+  "version": "1.0.0",
+  "description": "Distill developer coding style from Git history into Claude Code Skills",
+  "main": "install.js",
+  "bin": {
+    "code-alchemist": "install.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "keywords": [
+    "claude-code",
+    "skill",
+    "git",
+    "code-style",
+    "developer-tools"
+  ],
+  "author": "flacier",
+  "license": "MIT",
+  "files": [
+    "install.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14"
+  }
+}
