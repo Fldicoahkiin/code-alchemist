@@ -26,8 +26,8 @@ bash .agents/skills/code-alchemist/scripts/validate_skill.sh
 # 运行分析脚本
 bash .agents/skills/code-alchemist/scripts/distill_author.sh --help
 
-# 运行测试套件
-bash tests/run_tests.sh
+# 检查基本语法错误
+bash -n .agents/skills/code-alchemist/scripts/*.sh
 ```
 
 ## 报告问题

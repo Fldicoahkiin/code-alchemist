@@ -177,25 +177,37 @@ done
 cd "$REPO"
 log_info "Fetching commits..."
 
+commits_all="$OUT_DIR/.commits_all.txt"
 commits_file="$OUT_DIR/.commits_raw.txt"
+
 if [[ ${#pathspec_args[@]} -gt 0 ]]; then
-    git log "${git_log_opts[@]}" -- "${pathspec_args[@]}" 2>/dev/null | head -n "$MAX_COMMITS" > "$commits_file" || true
+    git log "${git_log_opts[@]}" -- "${pathspec_args[@]}" 2>/dev/null > "$commits_all" || true
 else
-    git log "${git_log_opts[@]}" 2>/dev/null | head -n "$MAX_COMMITS" > "$commits_file" || true
+    git log "${git_log_opts[@]}" 2>/dev/null > "$commits_all" || true
 fi
 
-# Filter empty lines from commits file
-sed -i '' '/^$/d' "$commits_file" 2>/dev/null || sed -i '/^$/d' "$commits_file"
+# Get list of files in the repository, filtered by pathspec
+if [[ ${#pathspec_args[@]} -gt 0 ]]; then
+    git ls-files -- "${pathspec_args[@]}" 2>/dev/null > "$OUT_DIR/.repo_files.tmp" || true
+else
+    git ls-files 2>/dev/null > "$OUT_DIR/.repo_files.tmp" || true
+fi
 
-total_commits=$(wc -l < "$commits_file" | tr -d ' ')
+# Filter empty lines (cross-platform compatible, works with both BSD and GNU sed)
+grep -v '^$' "$commits_all" > "$commits_all.filtered" && mv "$commits_all.filtered" "$commits_all"
+
+total_commits=$(grep -c '.' "$commits_all" 2>/dev/null) || total_commits=0
 
 if [[ "$total_commits" -eq 0 ]]; then
     log_error "No commits found for author(s): $AUTHOR_DISPLAY"
-    rm -f "$commits_file"
+    rm -f "$commits_all"
     exit 1
 fi
 
-log_info "Found $total_commits commits"
+head -n "$MAX_COMMITS" "$commits_all" > "$commits_file"
+rm -f "$commits_all"
+
+log_info "Found $total_commits commits (Analyzed up to $MAX_COMMITS)"
 
 LOW_SAMPLE_THRESHOLD=10
 if [[ "$total_commits" -lt "$LOW_SAMPLE_THRESHOLD" ]]; then
@@ -204,101 +216,111 @@ if [[ "$total_commits" -lt "$LOW_SAMPLE_THRESHOLD" ]]; then
 fi
 
 # Use temp files instead of associative arrays for Bash 3.2 compatibility
-file_stats_tmp="$OUT_DIR/.file_stats.tmp"
 email_list_tmp="$OUT_DIR/.emails.tmp"
 date_list_tmp="$OUT_DIR/.dates.tmp"
-dir_stats_tmp="$OUT_DIR/.dir_stats.tmp"
-ext_stats_tmp="$OUT_DIR/.ext_stats.tmp"
+raw_stats_stream="$OUT_DIR/.raw_stats_stream.tmp"
 
 # Initialize/clear temp files
-> "$file_stats_tmp"
 > "$email_list_tmp"
 > "$date_list_tmp"
-> "$dir_stats_tmp"
-> "$ext_stats_tmp"
+> "$raw_stats_stream"
 
 commit_count=0
 total_additions=0
 total_deletions=0
 
 # Read commits and analyze
-while IFS='|' read -r hash name email date subject; do
+while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
     [[ -z "$hash" ]] && continue
 
     commit_count=$((commit_count + 1))
 
-    # Track unique emails
-    if ! grep -q "^$email$" "$email_list_tmp" 2>/dev/null; then
-        echo "$email" >> "$email_list_tmp"
-    fi
-
-    # Track dates
-    if ! grep -q "^$date$" "$date_list_tmp" 2>/dev/null; then
-        echo "$date" >> "$date_list_tmp"
-    fi
+    # Track emails and dates
+    echo "$email" >> "$email_list_tmp"
+    echo "$date" >> "$date_list_tmp"
 
     # Get numstat for this commit
-    numstat=$(git diff-tree --no-commit-id --numstat -r "$hash" 2>/dev/null || true)
+    if [[ ${#pathspec_args[@]} -gt 0 ]]; then
+        numstat=$(git diff-tree --root --no-commit-id --numstat -r "$hash" -- "${pathspec_args[@]}" 2>/dev/null || true)
+    else
+        numstat=$(git diff-tree --root --no-commit-id --numstat -r "$hash" 2>/dev/null || true)
+    fi
 
     while IFS=$'\t' read -r added deleted file; do
         [[ -z "$file" ]] && continue
         [[ "$added" == "-" ]] && continue
 
-        # Update file stats (format: file|change_count|additions|deletions)
-        existing=$(grep "^$file|" "$file_stats_tmp" 2>/dev/null || true)
-        if [[ -n "$existing" ]]; then
-            old_count=$(echo "$existing" | cut -d'|' -f2)
-            old_adds=$(echo "$existing" | cut -d'|' -f3)
-            old_dels=$(echo "$existing" | cut -d'|' -f4)
-            new_count=$((old_count + 1))
-            new_adds=$((old_adds + added))
-            new_dels=$((old_dels + deleted))
-            grep -v "^$file|" "$file_stats_tmp" > "$file_stats_tmp.new" || true
-            mv "$file_stats_tmp.new" "$file_stats_tmp"
-            echo "$file|$new_count|$new_adds|$new_dels" >> "$file_stats_tmp"
-        else
-            echo "$file|1|$added|$deleted" >> "$file_stats_tmp"
-        fi
+        echo "$file|$added|$deleted" >> "$raw_stats_stream"
 
         total_additions=$((total_additions + added))
         total_deletions=$((total_deletions + deleted))
-
-        # Update directory stats
-        dir=$(dirname "$file")
-        dir_existing=$(grep "^$dir|" "$dir_stats_tmp" 2>/dev/null || true)
-        if [[ -n "$dir_existing" ]]; then
-            dir_count=$(echo "$dir_existing" | cut -d'|' -f2)
-            new_dir_count=$((dir_count + 1))
-            grep -v "^$dir|" "$dir_stats_tmp" > "$dir_stats_tmp.new" || true
-            mv "$dir_stats_tmp.new" "$dir_stats_tmp"
-            echo "$dir|$new_dir_count" >> "$dir_stats_tmp"
-        else
-            echo "$dir|1" >> "$dir_stats_tmp"
-        fi
-
-        # Update extension stats
-        ext="${file##*.}"
-        if [[ "$ext" != "$file" ]]; then
-            ext=".$ext"
-        else
-            ext="(none)"
-        fi
-        ext_existing=$(grep "^$ext|" "$ext_stats_tmp" 2>/dev/null || true)
-        if [[ -n "$ext_existing" ]]; then
-            ext_count=$(echo "$ext_existing" | cut -d'|' -f2)
-            new_ext_count=$((ext_count + 1))
-            grep -v "^$ext|" "$ext_stats_tmp" > "$ext_stats_tmp.new" || true
-            mv "$ext_stats_tmp.new" "$ext_stats_tmp"
-            echo "$ext|$new_ext_count" >> "$ext_stats_tmp"
-        else
-            echo "$ext|1" >> "$ext_stats_tmp"
-        fi
     done <<< "$numstat"
 
 done < "$commits_file"
 
 log_info "Analyzed $commit_count commits"
 log_info "Total changes: +$total_additions -$total_deletions"
+
+# Process raw stats with awk to avoid regex injections and improve performance
+file_stats_tmp="$OUT_DIR/.file_stats.tmp"
+dir_stats_tmp="$OUT_DIR/.dir_stats.tmp"
+ext_stats_tmp="$OUT_DIR/.ext_stats.tmp"
+
+awk -F'|' '{
+    file=$1; added=$2; deleted=$3;
+    counts[file]++
+    adds[file]+=added
+    dels[file]+=deleted
+} END {
+    for (f in counts) {
+        print f "|" counts[f] "|" adds[f] "|" dels[f]
+    }
+}' "$raw_stats_stream" > "$file_stats_tmp"
+
+awk -F'|' '{
+    file=$1;
+    n = split(file, parts, "/");
+    if (n > 1) {
+        dir = "";
+        for(i=1; i<n; i++) {
+            dir = dir (i>1?"/":"") parts[i];
+        }
+    } else {
+        dir = "."
+    }
+    dir_counts[dir]++
+} END {
+    for (d in dir_counts) {
+        print d "|" dir_counts[d]
+    }
+}' "$raw_stats_stream" > "$dir_stats_tmp"
+
+awk -F'|' '{
+    file=$1;
+    n = split(file, parts, "/");
+    filename = parts[n];
+    
+    idx = index(filename, ".");
+    if (idx == 0 || (idx == 1 && index(substr(filename, 2), ".") == 0)) {
+        ext = "(none)"
+    } else {
+        m = split(filename, fparts, ".");
+        ext = "." fparts[m]
+    }
+    ext_counts[ext]++
+} END {
+    for (e in ext_counts) {
+        print e "|" ext_counts[e]
+    }
+}' "$raw_stats_stream" > "$ext_stats_tmp"
+
+rm -f "$raw_stats_stream"
+
+sort -u "$email_list_tmp" > "$OUT_DIR/.emails_uniq.tmp"
+mv "$OUT_DIR/.emails_uniq.tmp" "$email_list_tmp"
+
+sort -u "$date_list_tmp" > "$OUT_DIR/.dates_uniq.tmp"
+mv "$OUT_DIR/.dates_uniq.tmp" "$date_list_tmp"
 
 # Sort stats files
 files_sorted="$OUT_DIR/.files_sorted.txt"
@@ -368,6 +390,9 @@ echo "Generating summary.json..."
     echo "    \"total_changes\": $((total_additions + total_deletions))"
     echo "  },"
 
+    other_count=$((commit_count - feat_count - fix_count - docs_count - test_count - refactor_count - chore_count))
+    [[ $other_count -lt 0 ]] && other_count=0
+
     # Commit patterns
     echo "  \"commit_patterns\": {"
     echo "    \"feat\": $feat_count,"
@@ -376,7 +401,7 @@ echo "Generating summary.json..."
     echo "    \"test\": $test_count,"
     echo "    \"refactor\": $refactor_count,"
     echo "    \"chore\": $chore_count,"
-    echo "    \"other\": $((commit_count - feat_count - fix_count - docs_count - test_count - refactor_count - chore_count))"
+    echo "    \"other\": $other_count"
     echo "  },"
 
     # Top files
@@ -451,7 +476,7 @@ echo "Generating summary.md..."
     echo "| test | $test_count |"
     echo "| refactor | $refactor_count |"
     echo "| chore | $chore_count |"
-    echo "| other | $((commit_count - feat_count - fix_count - docs_count - test_count - refactor_count - chore_count)) |"
+    echo "| other | $other_count |"
     echo ""
     echo "## Most Modified Files"
     echo ""
@@ -482,9 +507,13 @@ echo "Generating summary.md..."
     echo ""
     echo "## Sample Commits"
     echo ""
-    head -10 "$commits_file" | while IFS='|' read -r hash name email date subject; do
+    samples_tmp="$OUT_DIR/.samples_md.tmp"
+    head -10 "$commits_file" > "$samples_tmp"
+    while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
+        [[ -z "$hash" ]] && continue
         echo "- \`${hash:0:8}\` $date: $subject"
-    done
+    done < "$samples_tmp"
+    rm -f "$samples_tmp"
     echo ""
     echo "---"
     echo "*Generated by CodeAlchemist*"
@@ -492,14 +521,21 @@ echo "Generating summary.md..."
 
 # Extract example commits
 echo "Extracting example commits..."
+samples_tmp="$OUT_DIR/.samples_json.tmp"
+head -n "$MAX_EXAMPLES" "$commits_file" > "$samples_tmp"
 {
     echo "["
     first=1
-    head -n "$MAX_EXAMPLES" "$commits_file" | while IFS='|' read -r hash name email date subject; do
+    while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
         [[ -z "$hash" ]] && continue
 
-        # Save diff
-        git show --stat "$hash" > "$OUT_DIR/examples/${hash:0:8}.diff" 2>/dev/null || true
+        diff_file="$OUT_DIR/examples/${hash:0:8}.diff"
+        # Save both stat and patch, applying pathspec if present
+        if [[ ${#pathspec_args[@]} -gt 0 ]]; then
+            git show --stat --patch --format=fuller "$hash" -- "${pathspec_args[@]}" 2>/dev/null > "$diff_file" || true
+        else
+            git show --stat --patch --format=fuller "$hash" 2>/dev/null > "$diff_file" || true
+        fi
 
         [[ $first -eq 0 ]] && echo ","
         echo -n "  {"
@@ -510,10 +546,11 @@ echo "Extracting example commits..."
         echo -n "\"subject\": \"$(json_escape "$subject")\""
         echo -n "}"
         first=0
-    done
+    done < "$samples_tmp"
     echo ""
     echo "]"
 } > "$OUT_DIR/example_commits.json"
+rm -f "$samples_tmp"
 
 # Generate live_files.txt
 echo "Generating live_files.txt..."

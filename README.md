@@ -160,9 +160,8 @@ bash .agents/skills/code-alchemist/scripts/distill_author.sh \
 ```
 .agents/skills/<author>-style/
 ├── SKILL.md              # 风格规则和模式
-├── evals/
-│   └── evals.json        # 验证测试用例
-└── README.md             # 使用指南
+└── evals/
+    └── evals.json        # 验证测试用例
 ```
 
 ## 使用场景

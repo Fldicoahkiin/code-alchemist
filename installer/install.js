@@ -60,6 +60,14 @@ async function interactiveInstall(isUpdate) {
     output: process.stdout
   });
 
+  let rlClosed = false;
+  const safeClose = () => {
+    if (!rlClosed) {
+      rl.close();
+      rlClosed = true;
+    }
+  };
+
   try {
     const projectRoot = findProjectRoot();
     const globalDir = getGlobalSkillsDir();
@@ -89,6 +97,10 @@ async function interactiveInstall(isUpdate) {
       const answer = await askQuestion(rl, '\nEnter choice (1 or 2): ');
       if (answer === '1' || answer === '2') {
         locationChoice = answer;
+        if (locationChoice === '1' && !projectRoot) {
+            console.log('Error: Project root not found (.git or package.json missing). Please install inside a valid project or select Global.');
+            continue;
+        }
         break;
       }
       console.log('Invalid choice, please enter 1 or 2');
@@ -101,16 +113,17 @@ async function interactiveInstall(isUpdate) {
       const answer = await askQuestion(rl, '\nCodeAlchemist already installed here. Update? (y/n): ');
       if (answer.toLowerCase() !== 'y') {
         console.log('Installation cancelled.');
+        safeClose();
         return;
       }
     }
 
-    rl.close();
+    safeClose();
 
     await performInstall(installDir, isUpdate || exists);
 
   } catch (err) {
-    rl.close();
+    safeClose();
     throw err;
   }
 }
@@ -136,11 +149,8 @@ function performInstall(installDir, isUpdate) {
   console.log(`\n${isUpdate ? 'Updating' : 'Installing'} CodeAlchemist...`);
   console.log(`Location: ${installDir}\n`);
 
-  if (fs.existsSync(installDir)) {
-    fs.rmSync(installDir, { recursive: true, force: true });
-  }
-
-  fs.mkdirSync(installDir, { recursive: true });
+  const os = require('os');
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'code-alchemist-'));
 
   const files = [
     'SKILL.md',
@@ -159,7 +169,7 @@ function performInstall(installDir, isUpdate) {
 
   for (const file of files) {
     const url = `https://raw.githubusercontent.com/${REPO}/main/.agents/skills/code-alchemist/${file}`;
-    const localPath = path.join(installDir, file);
+    const localPath = path.join(tempDir, file);
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
 
     if (downloadWithRetry(url, localPath)) {
@@ -170,19 +180,50 @@ function performInstall(installDir, isUpdate) {
     }
   }
 
-  // Set executable permission on shell scripts
-  const scriptDir = path.join(installDir, 'scripts');
-  if (fs.existsSync(scriptDir)) {
-    fs.readdirSync(scriptDir).forEach(file => {
-      if (file.endsWith('.sh')) {
-        fs.chmodSync(path.join(scriptDir, file), 0o755);
-      }
-    });
-  }
+  if (successCount === files.length) {
+    // Set executable permission on shell scripts
+    const scriptDir = path.join(tempDir, 'scripts');
+    if (fs.existsSync(scriptDir)) {
+      fs.readdirSync(scriptDir).forEach(file => {
+        if (file.endsWith('.sh')) {
+          fs.chmodSync(path.join(scriptDir, file), 0o755);
+        }
+      });
+    }
 
-  console.log(`\n[OK] ${isUpdate ? 'Update' : 'Installation'} complete!`);
+    if (fs.existsSync(installDir)) {
+      fs.rmSync(installDir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(installDir, { recursive: true });
+
+    function copyDirSync(src, dest) {
+      fs.mkdirSync(dest, { recursive: true });
+      for (const entry of fs.readdirSync(src)) {
+        const srcPath = path.join(src, entry);
+        const destPath = path.join(dest, entry);
+        if (fs.statSync(srcPath).isDirectory()) {
+          copyDirSync(srcPath, destPath);
+        } else {
+          fs.copyFileSync(srcPath, destPath);
+        }
+      }
+    }
+    
+    copyDirSync(tempDir, installDir);
+    fs.rmSync(tempDir, { recursive: true, force: true });
+
+    console.log(`\n[OK] ${isUpdate ? 'Update' : 'Installation'} complete!`);
+  } else {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    console.log(`\n[ERROR] ${isUpdate ? 'Update' : 'Installation'} incomplete: ${files.length - successCount} file(s) failed.`);
+  }
   console.log(`  Files installed: ${successCount}/${files.length}`);
   console.log(`  Location: ${installDir}\n`);
+
+  if (successCount < files.length) {
+    process.exit(1);
+  }
+
   console.log('Usage in Claude Code:');
   console.log('  把 <author> 炼成 skill');
   console.log('');

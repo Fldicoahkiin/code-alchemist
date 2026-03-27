@@ -8,9 +8,6 @@ npx 安装器 for CodeAlchemist
 # 安装到当前项目
 npx code-alchemist
 
-# 全局安装
-npx code-alchemist --global
-
 # 更新
 npx code-alchemist --update
 

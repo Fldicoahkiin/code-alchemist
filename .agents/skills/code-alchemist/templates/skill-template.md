@@ -5,13 +5,20 @@ description: 'Coding style distilled from {author} git history. Use when writing
 
 # {author} Coding Style
 
-## Naming
+## Use This Skill When
 
-- Use specific prefixes/suffixes:
-  - `{example_prefix}` for {purpose}
-  - `{example_suffix}` for {purpose}
+- You are writing or refactoring code in {repo} that should match {author}'s conventions.
+- {scenario_1}
 
-## Structure
+## Workflow
+
+1. Analyze the context and requirements.
+2. {workflow_step_1}
+3. {workflow_step_2}
+
+## Rules
+
+### Naming
 
 - {structure_rule_1}
 - {structure_rule_2}

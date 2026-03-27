@@ -43,48 +43,27 @@ Read these files to understand the author's patterns:
 - `/tmp/<author>-analysis/example_commits.json` - sample commits
 
 ### Step 3: Deep Dive Code Samples
-From `live_files.txt`, read 3-5 representative files:
-- 1-2 most modified components
-- 1 hook file
-- 1 utility/lib file
+From `live_files.txt`, read 3-5 representative files based on:
+- Top 2-3 most modified files (highest change frequency)
+- 1 file from the most active directory
+- 1 test file if present in the stats
 
 Look for: naming patterns, import order, state management, error handling, file organization.
 
 ### Step 4: Generate Skill
 Create a complete, installable skill with these files:
 
-#### 4.1 Ask User for Installation Preferences
+#### 4.1 Determine Installation Preferences
 
-**Present options in the user's current language.** If the conversation is in Chinese, ask in Chinese. If English, ask in English.
+**Default behavior (use without asking):**
+- **Location**: Current project `.agents/skills/`
+- **Name**: `<author>-style`
 
-**Example prompts:**
-
-Chinese:
-> "分析完成。准备安装 skill，请确认："
->
-> **1. 安装位置** - 默认: 当前项目
-> - [x] 当前项目 ./.agents/skills/
-> - [ ] Claude 全局 ~/.claude/skills/
-> - [ ] 其他路径 _____________
->
-> **2. Skill 名称** - 默认: `<author>-style`
-> _____________
-
-English:
-> "Analysis complete. Ready to install the skill. Please confirm:"
->
-> **1. Install Location** - default: current project
-> - [x] Current project ./.agents/skills/
-> - [ ] Claude global ~/.claude/skills/
-> - [ ] Other path _____________
->
-> **2. Skill Name** - default: `<author>-style`
-> _____________
-
-Wait for user confirmation before proceeding.
+Only ask the user if they explicitly mention wanting a different location (global) or a custom name. Otherwise, proceed directly with the defaults.
 
 #### 4.2 Create Directory Structure
-Based on user choices:
+
+Create the skill at the default location (or user-specified if they requested otherwise):
 
 ```
 [selected-location]/<skill-name>/
@@ -166,18 +145,18 @@ If the user explicitly requests it, create a brief usage guide for the generated
 
 ### Step 5: Install the Skill
 
-Based on user's installation choice:
+Install using the default method (copy) at the default location. Only use symlink if the user explicitly requests it.
 
-#### Option A: Copy (默认)
+**Default (复制):**
 ```bash
-mkdir -p [target-dir]
-cp -r [generated-skill]/* [target-dir]/
+mkdir -p .agents/skills/<skill-name>
+cp -r /tmp/<author>-skill/* .agents/skills/<skill-name>/
 ```
 
-#### Option B: Symlink
+**Alternative (软链接) - only if user requests:**
 ```bash
-mkdir -p $(dirname [target-dir])
-ln -s [generated-skill] [target-dir]
+mkdir -p $(dirname .agents/skills/<skill-name>)
+ln -s /tmp/<author>-skill .agents/skills/<skill-name>
 ```
 
 Confirm success with details in user's language:

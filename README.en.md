@@ -160,9 +160,8 @@ A generated Skill contains:
 ```
 .agents/skills/<author>-style/
 ├── SKILL.md              # Style rules and patterns
-├── evals/
-│   └── evals.json        # Test cases for validation
-└── README.md             # Usage guide
+└── evals/
+    └── evals.json        # Test cases for validation
 ```
 
 ## Use Cases

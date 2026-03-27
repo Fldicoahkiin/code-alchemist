@@ -32,8 +32,8 @@ NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep '^name:' | head -1 | cut -
 if [[ -z "$NAME" ]]; then
     echo "[ERROR] Missing 'name' field in frontmatter"
     ERRORS=$((ERRORS + 1))
-elif [[ "$NAME" != "code-alchemist" ]]; then
-    echo "[ERROR] Name '$NAME' doesn't match folder name 'code-alchemist'"
+elif [[ "$NAME" =~ [^a-z0-9-] ]]; then
+    echo "[ERROR] Name '$NAME' contains invalid characters (only lowercase letters, numbers, and hyphens allowed)"
     ERRORS=$((ERRORS + 1))
 else
     echo "[OK] Name field valid: $NAME"
@@ -70,6 +70,8 @@ fi
 
 if ! grep -qi '## Use.*When\|## When.*Use\|## 使用\|## 何时' "$SKILL_FILE"; then
     echo "[WARNING] Missing 'When to Use' section"
+else
+    echo "[OK] 'When to Use' section present"
 fi
 
 # Check body content line count (excluding frontmatter)
