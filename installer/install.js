@@ -6,6 +6,7 @@ const path = require('path');
 const readline = require('readline');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
+const VERSION = 'v1.0.1'; // Locked version for reproducible installs
 
 function findProjectRoot() {
   let dir = process.cwd();
@@ -168,7 +169,7 @@ function performInstall(installDir, isUpdate) {
   let successCount = 0;
 
   for (const file of files) {
-    const url = `https://raw.githubusercontent.com/${REPO}/main/.agents/skills/code-alchemist/${file}`;
+    const url = `https://raw.githubusercontent.com/${REPO}/${VERSION}/.agents/skills/code-alchemist/${file}`;
     const localPath = path.join(tempDir, file);
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
 

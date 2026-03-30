@@ -21,9 +21,9 @@
       "bash": ">=3.2.0"
     },
     "checksums": {
-      "SKILL.md": "4a3fa03b6c3ddcfc0eb0bad871742458687a6654dd78cb190968ae2b7eff1846",
-      "scripts/distill_author.sh": "b91e01e8dd8ea6f58508dc108b31979efd1ee5d108354bce0f3672b56c4ac008",
-      "scripts/validate_skill.sh": "f878adc4778cb5d7c34e56351beb98efd7baa8b6869a6773d3b98684624e57fe"
+      "SKILL.md": "0f450b37455012d83b16e342c7a0da0e870c004ea234988426cdd6529f4acaa7",
+      "scripts/distill_author.sh": "78bb32427b527eb7ce725caed68a12e00cc593a5d57cf54f5d2071db7a4d8c9e",
+      "scripts/validate_skill.sh": "bb1944218e83b4118d8d1968b6040457a1b024a101ba2fa0bcc6890eb649ac27"
     }
   },
   "generated": "2026-03-27T10:00:00Z"

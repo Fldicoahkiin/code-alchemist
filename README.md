@@ -189,7 +189,7 @@ code-alchemist/
 ├── .agents/skills/code-alchemist/
 │   ├── SKILL.md                              # Skill 定义文件
 │   ├── scripts/
-│   │   ├── distill_author.sh                 # 核心分析脚本 (POSIX Shell)
+│   │   ├── distill_author.sh                 # 核心分析脚本 (Bash 3.2+)
 │   │   └── validate_skill.sh                 # Skill 验证脚本
 │   ├── references/
 │   │   ├── distillation-dimensions.md        # 8 维度提取清单

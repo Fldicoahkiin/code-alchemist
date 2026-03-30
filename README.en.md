@@ -189,7 +189,7 @@ code-alchemist/
 ├── .agents/skills/code-alchemist/
 │   ├── SKILL.md                              # Skill definition
 │   ├── scripts/
-│   │   ├── distill_author.sh                 # Core analysis script (POSIX Shell)
+│   │   ├── distill_author.sh                 # Core analysis script (Bash 3.2+)
 │   │   └── validate_skill.sh                 # Skill validation script
 │   ├── references/
 │   │   ├── distillation-dimensions.md        # 8-dimension extraction checklist

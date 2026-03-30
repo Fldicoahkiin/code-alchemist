@@ -1,6 +1,6 @@
 ---
 name: code-alchemist
-description: 'Distill one developer''s code style from git commit history into a reusable Claude Code Skill. Use when asked to "炼成skill", "analyze coding style", "preserve someone''s habits", or when you need to turn a developer''s patterns into a shareable skill that can be installed in any project.'
+description: 'Distill developer coding style from git history into Author Profile, AGENTS snippet, Copilot instructions, or reusable Skill. Use when analyzing code patterns, preserving engineering habits, or creating shareable style guides.'
 license: MIT
 metadata:
   author: Flacier
@@ -12,6 +12,21 @@ metadata:
 # CodeAlchemist
 
 Turn one developer's repeatable engineering habits into an installable Claude Code Skill.
+
+## When to Use
+
+Use this skill when you want to:
+
+- ** distill coding style**: "把张三炼成 skill", "analyze senior-dev's coding style", "preserve someone's habits"
+- **Generate style guides**: Create Author Profile, AGENTS.md snippet, Copilot instructions, or reusable Skill
+- **Analyze code patterns**: Understand how a developer structures code, names variables, handles errors
+- **Preserve engineering habits**: Capture repeatable patterns from an experienced developer
+- **Create shareable artifacts**: Turn personal coding conventions into team standards
+
+Do not use this skill when:
+- You just need general code review (no specific author's style to emulate)
+- The repository has too few commits from the target author (< 10 commits)
+- You need real-time analysis of code not yet committed
 
 ## One-Command Workflow
 
@@ -61,16 +76,18 @@ Create a complete, installable skill with these files:
 
 Only ask the user if they explicitly mention wanting a different location (global) or a custom name. Otherwise, proceed directly with the defaults.
 
-#### 4.2 Create Directory Structure
+#### 4.2 Create Directory Structure (Staging)
 
-Create the skill at the default location (or user-specified if they requested otherwise):
+First generate the skill to a staging directory, then install to the target location:
 
 ```
-[selected-location]/<skill-name>/
+/tmp/<author>-skill/          # Staging directory (temporary)
 ├── SKILL.md
 └── evals/
     └── evals.json
 ```
+
+The staging directory allows review before final installation.
 
 #### 4.3 Generate SKILL.md
 Use this template (adapt content based on analysis):

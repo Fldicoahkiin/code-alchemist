@@ -153,7 +153,7 @@ for author in "${AUTHORS[@]}"; do
     git_log_opts+=("--author=$author")
 done
 git_log_opts+=("--pretty=format:%H|%an|%ae|%ad|%s")
-git_log_opts+=("--date=short")
+git_log_opts+=("--date=unix")
 
 if [[ -n "$SINCE" ]]; then
     git_log_opts+=("--since=$SINCE")
@@ -331,6 +331,98 @@ sort -t'|' -k2 -nr "$file_stats_tmp" > "$files_sorted" 2>/dev/null || true
 sort -t'|' -k2 -nr "$dir_stats_tmp" > "$dirs_sorted" 2>/dev/null || true
 sort -t'|' -k2 -nr "$ext_stats_tmp" > "$exts_sorted" 2>/dev/null || true
 
+# Score and select representative commits (moved here before summary.md generation)
+echo "Selecting representative commits..."
+
+# Define code file extensions for scoring
+code_exts='\.(js|jsx|ts|tsx|py|rs|go|java|rb|php|swift|kt|scala|cs|cpp|c|h|hpp|sh|bash|zsh)$'
+
+# Score each commit based on:
+# 1. Total lines changed (importance)
+# 2. Code file ratio (prioritize code over docs)
+# 3. Time period diversity (ensure coverage across date range)
+commits_scored="$OUT_DIR/.commits_scored.txt"
+> "$commits_scored"
+
+# Get date range for time bucketing (git log outputs newest-first)
+first_timestamp=$(tail -1 "$commits_file" | cut -d'|' -f4)  # oldest (last line)
+last_timestamp=$(head -1 "$commits_file" | cut -d'|' -f4)   # newest (first line)
+first_epoch="${first_timestamp:-0}"
+last_epoch="${last_timestamp:-0}"
+time_span=$((last_epoch - first_epoch))
+
+# If time span is too small, treat as single period
+[[ $time_span -lt 86400 ]] && time_span=86400
+
+while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
+    [[ -z "$hash" ]] && continue
+
+    # Get numstat for this commit
+    if [[ ${#pathspec_args[@]} -gt 0 ]]; then
+        numstat=$(git diff-tree --root --no-commit-id --numstat -r "$hash" -- "${pathspec_args[@]}" 2>/dev/null || true)
+    else
+        numstat=$(git diff-tree --root --no-commit-id --numstat -r "$hash" 2>/dev/null || true)
+    fi
+
+    total_lines=0
+    code_lines=0
+    while IFS=$'\t' read -r added deleted file; do
+        [[ -z "$file" ]] && continue
+        [[ "$added" == "-" ]] && continue
+
+        total_lines=$((total_lines + added + deleted))
+        if echo "$file" | grep -qE "$code_exts"; then
+            code_lines=$((code_lines + added + deleted))
+        fi
+    done <<< "$numstat"
+
+    # Calculate score components
+    # Size score: log2 of total lines (avoid over-weighting huge commits)
+    size_score=0
+    if [[ $total_lines -gt 0 ]]; then
+        size_score=$(awk "BEGIN {printf \"%.0f\", log($total_lines)/log(2)}")
+    fi
+
+    # Code ratio score (0-10): prefer commits with 50-100% code changes
+    code_ratio_score=0
+    if [[ $total_lines -gt 0 ]]; then
+        code_ratio=$((code_lines * 100 / total_lines))
+        if [[ $code_ratio -ge 50 ]]; then
+            code_ratio_score=10
+        elif [[ $code_ratio -ge 20 ]]; then
+            code_ratio_score=5
+        fi
+    fi
+
+    # Time diversity score (0-5): spread across early/middle/recent
+    time_score=0
+    if [[ $time_span -gt 0 && $first_epoch -gt 0 ]]; then
+        commit_epoch="$date"
+        if [[ $commit_epoch -gt 0 ]]; then
+            # Normalize to 0-100 range based on position in timeline
+            position=$(( (commit_epoch - first_epoch) * 100 / time_span ))
+            # Give higher score to commits in first 30% or last 30% of time range
+            if [[ $position -le 30 || $position -ge 70 ]]; then
+                time_score=5
+            else
+                time_score=2
+            fi
+        fi
+    fi
+
+    # Final score: weighted sum
+    final_score=$((size_score * 2 + code_ratio_score * 3 + time_score))
+
+    # Output: score|hash|name|email|date|subject|total_lines|code_lines
+    echo "$final_score|$hash|$name|$email|$date|$subject|$total_lines|$code_lines" >> "$commits_scored"
+done < "$commits_file"
+
+# Sort by score (descending) and select top commits
+commits_selected="$OUT_DIR/.commits_selected.txt"
+sort -t'|' -k1 -nr "$commits_scored" | head -n "$MAX_EXAMPLES" | cut -d'|' -f2-6 > "$commits_selected"
+
+log_info "Selected $(wc -l < "$commits_selected" | tr -d ' ') representative commits"
+
 # Analyze commit message patterns
 log_info "Analyzing commit message patterns..."
 
@@ -505,13 +597,17 @@ echo "Generating summary.md..."
         echo "| \`$ext\` | $count |"
     done < "$exts_sorted"
     echo ""
-    echo "## Sample Commits"
+    echo "## Representative Commits"
+    echo ""
+    echo "*Selected based on code changes, file diversity, and time distribution*"
     echo ""
     samples_tmp="$OUT_DIR/.samples_md.tmp"
-    head -10 "$commits_file" > "$samples_tmp"
+    head -10 "$commits_selected" > "$samples_tmp"
     while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
         [[ -z "$hash" ]] && continue
-        echo "- \`${hash:0:8}\` $date: $subject"
+        # Convert epoch to readable date
+        readable_date=$(date -r "$date" "+%Y-%m-%d" 2>/dev/null || date -d "@$date" "+%Y-%m-%d" 2>/dev/null || echo "$date")
+        echo "- \`${hash:0:8}\` $readable_date: $subject"
     done < "$samples_tmp"
     rm -f "$samples_tmp"
     echo ""
@@ -522,7 +618,7 @@ echo "Generating summary.md..."
 # Extract example commits
 echo "Extracting example commits..."
 samples_tmp="$OUT_DIR/.samples_json.tmp"
-head -n "$MAX_EXAMPLES" "$commits_file" > "$samples_tmp"
+cp "$commits_selected" "$samples_tmp"
 {
     echo "["
     first=1
@@ -552,20 +648,77 @@ head -n "$MAX_EXAMPLES" "$commits_file" > "$samples_tmp"
 } > "$OUT_DIR/example_commits.json"
 rm -f "$samples_tmp"
 
-# Generate live_files.txt
+# Generate live_files.txt with code file prioritization
 echo "Generating live_files.txt..."
+
+# Define code file extensions (prioritized for style analysis)
+code_extensions='\.(js|jsx|ts|tsx|py|rs|go|java|rb|php|swift|kt|scala|cs|cpp|c|h|hpp|sh|bash|zsh)$'
+
+# Define doc/config file basename patterns (match filename only, not full path)
+doc_basenames='^(README|LICENSE|CHANGELOG|CONTRIBUTING|AUTHORS|NOTICE|\.env|\.gitignore|\.gitattributes|\.dockerignore|Makefile|CMakeLists\.txt|Dockerfile)$'
+
+# Define doc/config file extensions
+doc_extensions='\.(md|txt|yaml|yml|json|toml|ini|cfg|conf)$'
+
+# Define config file basename patterns (package.json, etc.)
+config_basenames='^(package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.toml|Cargo\.lock|go\.mod|go\.sum|setup\.py|pyproject\.toml|requirements\.txt|Gemfile|Gemfile\.lock|composer\.json|composer\.lock|pom\.xml|build\.gradle|gradlew|gradlew\.bat|mvnw|mvnw\.cmd|tsconfig\.json|jsconfig\.json|eslint.*|prettier.*|babel.*|webpack.*|vite.*|rollup.*|turbo\.json|next\.config.*|vercel\.json|netlify\.toml|docker-compose.*|Dockerfile.*)$'
+
+code_files_tmp="$OUT_DIR/.code_files.tmp"
+doc_files_tmp="$OUT_DIR/.doc_files.tmp"
+>"$code_files_tmp"
+>"$doc_files_tmp"
+
+is_doc_file() {
+    local file="$1"
+    local basename
+    basename=$(basename "$file")
+
+    # Check if basename matches doc patterns
+    if echo "$basename" | grep -qE "$doc_basenames"; then
+        return 0
+    fi
+
+    # Check if basename matches config patterns
+    if echo "$basename" | grep -qE "$config_basenames"; then
+        return 0
+    fi
+
+    # Check if file has doc extension
+    if echo "$basename" | grep -qE "$doc_extensions"; then
+        return 0
+    fi
+
+    return 1
+}
+
 while IFS='|' read -r file count adds dels; do
     [[ -z "$file" ]] && continue
     if git cat-file -e "HEAD:$file" 2>/dev/null; then
-        echo "$file"
+        # Check if it's a code file by extension
+        if echo "$file" | grep -qE "$code_extensions"; then
+            echo "$file" >> "$code_files_tmp"
+        elif is_doc_file "$file"; then
+            # It's a doc/config file
+            echo "$file" >> "$doc_files_tmp"
+        else
+            # Unknown type - treat as code for safety
+            echo "$file" >> "$code_files_tmp"
+        fi
     fi
-done < "$files_sorted" > "$OUT_DIR/live_files.txt"
+done < "$files_sorted"
 
-live_count=$(wc -l < "$OUT_DIR/live_files.txt" | tr -d ' ')
-log_info "Found $live_count files still in repository"
+# Combine: code files first, then doc files
+cat "$code_files_tmp" "$doc_files_tmp" > "$OUT_DIR/live_files.txt"
+
+code_count=$(wc -l < "$code_files_tmp" | tr -d ' ')
+doc_count=$(wc -l < "$doc_files_tmp" | tr -d ' ')
+log_info "Found $code_count code files, $doc_count doc/config files"
+
+rm -f "$code_files_tmp" "$doc_files_tmp"
 
 # Cleanup temp files
 rm -f "$commits_file" "$files_sorted" "$dirs_sorted" "$exts_sorted"
+rm -f "$commits_scored" "$commits_selected"
 rm -f "$file_stats_tmp" "$email_list_tmp" "$date_list_tmp" "$dir_stats_tmp" "$ext_stats_tmp"
 rm -f "$OUT_DIR/"*.new 2>/dev/null || true
 
