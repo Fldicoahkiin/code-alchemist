@@ -6,7 +6,17 @@ const path = require('path');
 const readline = require('readline');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
-const VERSION = 'v1.1.0'; // Locked version for reproducible installs
+const DEFAULT_VERSION = 'v1.1.0'; // Fallback version
+
+function getVersion() {
+  // Try to get version from npm environment (when installed via npm)
+  const npmPackageVersion = process.env.npm_package_version;
+  if (npmPackageVersion) {
+    return `v${npmPackageVersion}`;
+  }
+  // Fallback to default
+  return DEFAULT_VERSION;
+}
 
 function findProjectRoot() {
   let dir = process.cwd();
@@ -169,7 +179,8 @@ function performInstall(installDir, isUpdate) {
   let successCount = 0;
 
   for (const file of files) {
-    const url = `https://raw.githubusercontent.com/${REPO}/${VERSION}/.agents/skills/code-alchemist/${file}`;
+    const version = getVersion();
+    const url = `https://raw.githubusercontent.com/${REPO}/${version}/.agents/skills/code-alchemist/${file}`;
     const localPath = path.join(tempDir, file);
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
 
@@ -178,6 +189,12 @@ function performInstall(installDir, isUpdate) {
       successCount++;
     } else {
       console.log(`  [ERROR] ${file} (download failed after ${MAX_RETRIES} attempts)`);
+      console.log(`          URL: ${url}`);
+      if (version !== 'main' && successCount === 0) {
+        console.log(`  [HINT] Version ${version} may not exist yet. Falling back to 'main' branch.`);
+        // Try fallback to main for all subsequent files
+        process.env.CODE_ALCHEMIST_FALLBACK = 'true';
+      }
     }
   }
 

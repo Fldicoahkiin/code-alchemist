@@ -79,7 +79,14 @@ else
 fi
 
 # Check body content line count (excluding frontmatter)
-BODY_LINES=$(tail -n +$(grep -n '^---$' "$SKILL_FILE" | tail -1 | cut -d: -f1) "$SKILL_FILE" | wc -l | tr -d ' ')
+# Find the second '---' (end of frontmatter) and count lines after it
+SEPARATOR_LINES=$(grep -n '^---$' "$SKILL_FILE" | head -2 | tail -1 | cut -d: -f1)
+if [[ -n "$SEPARATOR_LINES" ]]; then
+    BODY_LINES=$(tail -n +$((SEPARATOR_LINES + 1)) "$SKILL_FILE" | wc -l | tr -d ' ')
+else
+    # Fallback: count all lines if no frontmatter found
+    BODY_LINES=$(wc -l < "$SKILL_FILE" | tr -d ' ')
+fi
 if [[ $BODY_LINES -gt 500 ]]; then
     echo "[WARNING] Body content is $BODY_LINES lines (recommended under 500)"
     WARNINGS=$((WARNINGS + 1))
