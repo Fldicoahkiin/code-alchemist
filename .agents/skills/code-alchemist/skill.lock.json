@@ -21,10 +21,10 @@
       "bash": ">=3.2.0"
     },
     "checksums": {
-      "SKILL.md": "0f450b37455012d83b16e342c7a0da0e870c004ea234988426cdd6529f4acaa7",
+      "SKILL.md": "5c838360ebc7f621373e6e35624972ffd445c04548c022779108a7fd631572a4",
       "scripts/distill_author.sh": "78bb32427b527eb7ce725caed68a12e00cc593a5d57cf54f5d2071db7a4d8c9e",
       "scripts/validate_skill.sh": "bb1944218e83b4118d8d1968b6040457a1b024a101ba2fa0bcc6890eb649ac27"
     }
   },
-  "generated": "2026-03-27T10:00:00Z"
+  "generated": "2026-03-30T00:00:00Z"
 }
