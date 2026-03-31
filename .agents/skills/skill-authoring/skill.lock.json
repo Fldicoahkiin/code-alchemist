@@ -1,0 +1,23 @@
+{
+  "name": "skill-authoring",
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "skill": {
+    "name": "skill-authoring",
+    "version": "1.0.0",
+    "entry": "SKILL.md",
+    "files": [
+      "SKILL.md",
+      "scripts/validate_skill.sh",
+      "evals/evals.json"
+    ],
+    "dependencies": {
+      "bash": ">=3.2.0"
+    },
+    "checksums": {
+      "SKILL.md": "11680c5684000b7eecdbe8fb99cb44b6f02fb9e118c774d2e782a830ec4977d9",
+      "scripts/validate_skill.sh": "5d7316da19a406b2f062e63efa21d2c7f18ad69ed4cab9bf6e3a147902a0564a"
+    }
+  },
+  "generated": "2026-03-31T00:00:00Z"
+}

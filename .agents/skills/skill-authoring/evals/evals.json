@@ -1,0 +1,38 @@
+{
+  "skill_name": "skill-authoring",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "创建一个用于代码审查的 skill",
+      "expected_output": "生成符合规范的 SKILL.md，包含 frontmatter、When to Use、工作流和规则",
+      "assertions": [
+        "包含 name, description, license 的 frontmatter",
+        "description 长度在 10-1024 字符之间且带引号",
+        "有 H1 标题",
+        "有 When to Use 章节",
+        "有清晰的规则说明"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "验证我的 SKILL.md 格式是否正确",
+      "expected_output": "运行验证脚本并报告所有错误和警告",
+      "assertions": [
+        "检查 frontmatter 格式",
+        "验证 name 字段合法性",
+        "检查 description 长度",
+        "验证 evals.json 存在"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "我的 skill description 被验证脚本报告为 381 字符，但实际只有 226 字符",
+      "expected_output": "诊断 frontmatter 解析问题并提供修复方案",
+      "assertions": [
+        "识别到多段 frontmatter 干扰",
+        "提供 awk 修复命令",
+        "解释如何只提取第一段 frontmatter"
+      ]
+    }
+  ]
+}
