@@ -29,7 +29,8 @@ else
 fi
 
 # Extract and validate name (first occurrence after first ---)
-NAME=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep '^name:' | head -1 | cut -d: -f2 | tr -d ' ')
+# Only extract from the first frontmatter block (between first and second ---)
+NAME=$(awk '/^---$/ {found++} found==1 && /^name:/ {gsub(/^name:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE" | tr -d ' ')
 if [[ -z "$NAME" ]]; then
     echo "[SPEC ERROR] Missing 'name' field in frontmatter"
     SPEC_ERRORS=$((SPEC_ERRORS + 1))
@@ -41,7 +42,8 @@ else
 fi
 
 # Check description exists and length
-DESCRIPTION=$(sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep '^description:' | cut -d: -f2- | sed "s/^[\"' ]*//;s/[\"' ]*$//")
+# Only extract from the first frontmatter block
+DESCRIPTION=$(awk '/^---$/ {found++} found==1 && /^description:/ {sub(/^description:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE" | sed "s/^[\\\"']*//;s/[\\\"']*$//")
 DESC_LEN=${#DESCRIPTION}
 if [[ -z "$DESCRIPTION" ]]; then
     echo "[SPEC ERROR] Missing 'description' field in frontmatter"
@@ -57,7 +59,8 @@ else
 fi
 
 # Check description is quoted
-if ! sed -n '/^---$/,/^---$/p' "$SKILL_FILE" | grep '^description:' | grep -q "['\"]"; then
+DESC_LINE=$(awk '/^---$/ {found++} found==1 && /^description:/ {print; exit}' "$SKILL_FILE")
+if ! echo "$DESC_LINE" | grep -q "[\\\"']"; then
     echo "[WARNING] Description should be wrapped in single or double quotes"
     WARNINGS=$((WARNINGS + 1))
 fi

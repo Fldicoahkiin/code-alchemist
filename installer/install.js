@@ -9,6 +9,10 @@ const REPO = 'Fldicoahkiin/code-alchemist';
 const DEFAULT_VERSION = 'v1.1.0'; // Fallback version
 
 function getVersion() {
+  // Check for fallback flag (set when version download fails)
+  if (process.env.CODE_ALCHEMIST_FALLBACK === 'true') {
+    return 'main';
+  }
   // Try to get version from npm environment (when installed via npm)
   const npmPackageVersion = process.env.npm_package_version;
   if (npmPackageVersion) {
