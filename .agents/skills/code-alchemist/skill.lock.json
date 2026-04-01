@@ -22,9 +22,9 @@
     },
     "checksums": {
       "SKILL.md": "d7651e87ff8da27a0beb17e947310ae5d9addc67c9e87c7bc12ea165ba7bb66a",
-      "scripts/distill_author.sh": "4c5c75190bd3c0b93cb35a0d9351c451bb72d28b95d55de3523126b1eb262a41",
+      "scripts/distill_author.sh": "375a729cffd89e271ee39f8105c70104be35b5720b5f4f982136a4edae69dc23",
       "scripts/validate_skill.sh": "6b21ae7929ce2480d5180add6c0ade2b0c5df356ddb040a42dff1cf970f566b5"
     }
   },
-  "generated": "2026-04-01T08:11:41Z"
+  "generated": "2026-04-01T10:24:13Z"
 }
