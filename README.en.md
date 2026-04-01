@@ -1,25 +1,26 @@
-# CodeAlchemist
+<div align="center">
+
+# Code Alchemist
 
 > The departed colleague hasn't truly left—they've been distilled into tokens, continuing to guide you in a new form.
 
-CodeAlchemist is a Claude Code Skill that learns a developer's coding style from Git commit history and distills it into an installable Skill. One command to analyze, generate, and install—ready to use immediately.
+**Code Alchemist is a Claude Code Skill that learns a developer's coding style from Git commit history and distills it into an installable Skill. Instantly distilled.**
 
-<div align="center">
+<br>
 
-[![Bash 3.2+](https://img.shields.io/badge/Bash-3.2%2B-1a1a2e?style=flat-square&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
-[![License](https://img.shields.io/badge/license-MIT-16213e?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-e94560?style=flat-square)](https://claude.ai/code)
-[![Agent Skills](https://img.shields.io/badge/Agent_Skills-installable-0f3460?style=flat-square&logo=npm&logoColor=white)](https://agentskills.io)
+[![License](https://img.shields.io/badge/License-MIT-f7c948?style=for-the-badge&labelColor=333333)](LICENSE) [![Bash](https://img.shields.io/badge/Bash-3.2%2B-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white&labelColor=333333)](https://www.gnu.org/software/bash/) [![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-D97757?style=for-the-badge&labelColor=333333&logo=anthropic&logoColor=white)](https://claude.ai/code) [![npm](https://img.shields.io/badge/npm-installable-CB3837?style=for-the-badge&logo=npm&logoColor=white&labelColor=333333)](https://www.npmjs.com/)
 
 [中文文档](README.md)
 
 </div>
 
+---
+
 ## Overview
 
 Every engineering team has members whose coding wisdom is invaluable—their naming conventions, architectural instincts, and testing habits shape the codebase. When they move on, that knowledge often leaves with them.
 
-CodeAlchemist captures these repeatable engineering habits from Git history, preserving them as an actionable Skill that can be installed in any project.
+Code Alchemist captures these repeatable engineering habits from Git history, preserving them as an actionable Skill that can be installed in any project.
 
 ## Features
 

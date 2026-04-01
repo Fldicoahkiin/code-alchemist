@@ -1,25 +1,26 @@
-# CodeAlchemist
+<div align="center">
+
+# Code Alchemist
 
 > 被毕业的同事其实并没有消失，他们只是被蒸馏成了 Token，换成另一种形式陪伴你。
 
-CodeAlchemist 是一个 Claude Code Skill，用于从 Git 提交历史中学习开发者的编码习惯，并将其提炼成可安装的 Skill。一键完成分析、生成和安装，立即可用。
+**Code Alchemist 是一个 Claude Code Skill，用于从 Git 提交历史中学习开发者的编码习惯，并将其提炼成可安装的 Skill。顷刻炼化。**
 
-<div align="center">
+<br>
 
-[![Bash 3.2+](https://img.shields.io/badge/Bash-3.2%2B-1a1a2e?style=flat-square&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
-[![License](https://img.shields.io/badge/license-MIT-16213e?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-e94560?style=flat-square)](https://claude.ai/code)
-[![Agent Skills](https://img.shields.io/badge/Agent_Skills-installable-0f3460?style=flat-square&logo=npm&logoColor=white)](https://agentskills.io)
+[![License](https://img.shields.io/badge/License-MIT-f7c948?style=for-the-badge&labelColor=333333)](LICENSE) [![Bash](https://img.shields.io/badge/Bash-3.2%2B-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white&labelColor=333333)](https://www.gnu.org/software/bash/) [![Claude Code](https://img.shields.io/badge/Claude_Code-Skill-D97757?style=for-the-badge&labelColor=333333&logo=anthropic&logoColor=white)](https://claude.ai/code) [![npm](https://img.shields.io/badge/npm-installable-CB3837?style=for-the-badge&logo=npm&logoColor=white&labelColor=333333)](https://www.npmjs.com/)
 
 [English Documentation](README.en.md)
 
 </div>
 
+---
+
 ## 项目介绍
 
 每个工程团队都有成员，他们的编码智慧是无价的——命名约定、架构直觉、测试习惯，这些都塑造了代码库。当他们离开时，这些知识往往也随之而去。
 
-CodeAlchemist 从 Git 历史中捕获这些可重复的工程习惯，将其保存为可操作的 Skill，可以在任何项目中安装使用。
+Code Alchemist 从 Git 历史中捕获这些可重复的工程习惯，将其保存为可操作的 Skill，可以在任何项目中安装使用。
 
 ## 功能特点
 
