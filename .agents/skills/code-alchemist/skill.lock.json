@@ -1,10 +1,10 @@
 {
   "name": "code-alchemist",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "lockfileVersion": 1,
   "skill": {
     "name": "code-alchemist",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "entry": "SKILL.md",
     "files": [
       "SKILL.md",
@@ -21,10 +21,10 @@
       "bash": ">=3.2.0"
     },
     "checksums": {
-      "SKILL.md": "5c838360ebc7f621373e6e35624972ffd445c04548c022779108a7fd631572a4",
-      "scripts/distill_author.sh": "78bb32427b527eb7ce725caed68a12e00cc593a5d57cf54f5d2071db7a4d8c9e",
-      "scripts/validate_skill.sh": "bf474fc4dd7de40ab0ae895e77c1da9bafaa2a00351024ecc7bc8592c359296e"
+      "SKILL.md": "d7651e87ff8da27a0beb17e947310ae5d9addc67c9e87c7bc12ea165ba7bb66a",
+      "scripts/distill_author.sh": "4c5c75190bd3c0b93cb35a0d9351c451bb72d28b95d55de3523126b1eb262a41",
+      "scripts/validate_skill.sh": "6b21ae7929ce2480d5180add6c0ade2b0c5df356ddb040a42dff1cf970f566b5"
     }
   },
-  "generated": "2026-03-30T00:00:00Z"
+  "generated": "2026-04-01T08:11:41Z"
 }
