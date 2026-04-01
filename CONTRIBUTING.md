@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢你对 CodeAlchemist 的兴趣！
+感谢你对 Code Alchemist 的兴趣！
 
 ## 开发流程
 

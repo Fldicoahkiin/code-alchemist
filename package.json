@@ -1,7 +1,7 @@
 {
   "name": "code-alchemist-repo",
   "version": "1.1.0",
-  "description": "CodeAlchemist - Distill developer coding style from Git history into Claude Code Skills (Repository package)",
+  "description": "Code Alchemist - Distill developer coding style from Git history into Claude Code Skills (Repository package)",
   "private": true,
   "scripts": {
     "validate": "bash .agents/skills/code-alchemist/scripts/validate_skill.sh",
