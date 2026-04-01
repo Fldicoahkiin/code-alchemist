@@ -9,7 +9,7 @@ metadata:
   repository: https://github.com/Fldicoahkiin/code-alchemist
 ---
 
-# CodeAlchemist
+# Code Alchemist
 
 Turn one developer's repeatable engineering habits into an installable Claude Code Skill.
 

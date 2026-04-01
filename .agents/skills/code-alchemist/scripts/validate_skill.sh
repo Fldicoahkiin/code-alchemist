@@ -9,7 +9,7 @@ SKILL_FILE="$SKILL_DIR/SKILL.md"
 SPEC_ERRORS=0
 WARNINGS=0
 
-echo "Validating CodeAlchemist SKILL.md..."
+echo "Validating Code Alchemist SKILL.md..."
 echo ""
 
 # Check file exists

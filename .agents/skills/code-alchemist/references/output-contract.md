@@ -1,6 +1,6 @@
 # Output Contract
 
-CodeAlchemist should produce one primary deliverable at a time. Pick the format that best matches the user's goal instead of emitting everything at once.
+Code Alchemist should produce one primary deliverable at a time. Pick the format that best matches the user's goal instead of emitting everything at once.
 
 ## 1. Author Profile
 
@@ -38,7 +38,7 @@ Use this when the distilled rules should become repository collaboration guidanc
 Minimum structure:
 
 ```markdown
-## CodeAlchemist Author Style Rules
+## Code Alchemist Author Style Rules
 
 - Naming:
 - Structure:
