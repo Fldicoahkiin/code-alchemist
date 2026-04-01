@@ -539,7 +539,9 @@ echo "Generating file_stats.csv..."
 echo "file,changes,additions,deletions" > "$OUT_DIR/file_stats.csv"
 while IFS='|' read -r file count adds dels; do
     [[ -z "$file" ]] && continue
-    echo "\"$file\",$count,${adds:-0},${dels:-0}"
+    # Escape quotes in filename for CSV safety (CSV: " -> "")
+    safe_file="${file//\"/\"\"}"
+    echo "\"$safe_file\",$count,${adds:-0},${dels:-0}"
 done < "$files_sorted" >> "$OUT_DIR/file_stats.csv"
 
 # Generate summary.md
@@ -606,7 +608,7 @@ echo "Generating summary.md..."
     while IFS='|' read -r hash name email date subject || [[ -n "$hash" ]]; do
         [[ -z "$hash" ]] && continue
         # Convert epoch to readable date
-        readable_date=$(date -r "$date" "+%Y-%m-%d" 2>/dev/null || date -d "@$date" "+%Y-%m-%d" 2>/dev/null || echo "$date")
+        readable_date=$(date -r "$date" "+%Y-%m-%d" 2>/dev/null || date -d "@$date" "+%Y-%m-%d" 2>/dev/null || echo "Unknown")
         echo "- \`${hash:0:8}\` $readable_date: $subject"
     done < "$samples_tmp"
     rm -f "$samples_tmp"
