@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke tests for CodeAlchemist distill_author.sh
+# Smoke tests for Code Alchemist distill_author.sh
 
 set -e
 
@@ -236,7 +236,7 @@ test_low_sample_warning() {
 # Main test runner
 main() {
     echo "=========================================="
-    echo "CodeAlchemist Smoke Tests"
+    echo "Code Alchemist Smoke Tests"
     echo "=========================================="
     echo ""
 

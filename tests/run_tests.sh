@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Test runner for CodeAlchemist
+# Test runner for Code Alchemist
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Running CodeAlchemist tests..."
+echo "Running Code Alchemist tests..."
 echo ""
 
 # Run smoke tests
