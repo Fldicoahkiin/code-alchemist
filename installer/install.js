@@ -4,6 +4,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const crypto = require('crypto');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
 const DEFAULT_VERSION = 'v1.2.0'; // Fallback version
@@ -173,11 +174,11 @@ function performInstall(installDir, isUpdate) {
     'evals/evals.json',
     'scripts/distill_author.sh',
     'scripts/validate_skill.sh',
+    'scripts/generate_checksums.sh',
     'references/distillation-dimensions.md',
     'references/output-contract.md',
     'templates/skill-template.md',
-    'templates/agents-snippet.md',
-    'agents/openai.yaml'
+    'templates/agents-snippet.md'
   ];
 
   function downloadFiles(version) {
@@ -225,6 +226,43 @@ function performInstall(installDir, isUpdate) {
   }
 
   if (result.success) {
+    // Verify checksums from skill.lock.json
+    console.log('\nVerifying file checksums...');
+    const lockFilePath = path.join(tempDir, 'skill.lock.json');
+    let checksums = {};
+    try {
+      const lockContent = fs.readFileSync(lockFilePath, 'utf8');
+      const lockData = JSON.parse(lockContent);
+      checksums = lockData.skill?.checksums || {};
+    } catch (e) {
+      console.log('  [WARN] Could not read skill.lock.json for checksum verification');
+    }
+
+    let checksumErrors = 0;
+    for (const [file, expectedHash] of Object.entries(checksums)) {
+      const filePath = path.join(tempDir, file);
+      if (!fs.existsSync(filePath)) {
+        console.log(`  [SKIP] ${file} (not found)`);
+        continue;
+      }
+      const content = fs.readFileSync(filePath);
+      const actualHash = crypto.createHash('sha256').update(content).digest('hex');
+      if (actualHash === expectedHash) {
+        console.log(`  [OK] ${file}`);
+      } else {
+        console.log(`  [ERROR] ${file} (checksum mismatch)`);
+        console.log(`          Expected: ${expectedHash}`);
+        console.log(`          Actual:   ${actualHash}`);
+        checksumErrors++;
+      }
+    }
+
+    if (checksumErrors > 0) {
+      console.log(`\n[ERROR] ${checksumErrors} file(s) failed checksum verification.`);
+      fs.rmSync(tempDir, { recursive: true, force: true });
+      process.exit(1);
+    }
+
     // Set executable permission on shell scripts
     const scriptDir = path.join(tempDir, 'scripts');
     if (fs.existsSync(scriptDir)) {
