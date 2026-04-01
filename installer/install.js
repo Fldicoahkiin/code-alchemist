@@ -180,38 +180,51 @@ function performInstall(installDir, isUpdate) {
     'agents/openai.yaml'
   ];
 
-  let successCount = 0;
+  function downloadFiles(version) {
+    let successCount = 0;
+    for (const file of files) {
+      const url = `https://raw.githubusercontent.com/${REPO}/${version}/.agents/skills/code-alchemist/${file}`;
+      const localPath = path.join(tempDir, file);
+      fs.mkdirSync(path.dirname(localPath), { recursive: true });
 
-  for (const file of files) {
-    const version = getVersion();
-    const url = `https://raw.githubusercontent.com/${REPO}/${version}/.agents/skills/code-alchemist/${file}`;
-    const localPath = path.join(tempDir, file);
-    fs.mkdirSync(path.dirname(localPath), { recursive: true });
-
-    if (downloadWithRetry(url, localPath)) {
-      console.log(`  [OK] ${file}`);
-      successCount++;
-    } else {
-      console.log(`  [ERROR] ${file} (download failed after ${MAX_RETRIES} attempts)`);
-      console.log(`          URL: ${url}`);
-
-      // Try fallback to main branch for current file and subsequent files
-      if (version !== 'main') {
-        console.log(`  [HINT] Version ${version} may not exist yet. Falling back to 'main' branch.`);
-        process.env.CODE_ALCHEMIST_FALLBACK = 'true';
-
-        const fallbackUrl = `https://raw.githubusercontent.com/${REPO}/main/.agents/skills/code-alchemist/${file}`;
-        if (downloadWithRetry(fallbackUrl, localPath)) {
-          console.log(`  [OK] ${file} (fallback to main)`);
-          successCount++;
-        } else {
-          console.log(`  [ERROR] ${file} (fallback failed)`);
-        }
+      if (downloadWithRetry(url, localPath)) {
+        console.log(`  [OK] ${file}`);
+        successCount++;
+      } else {
+        console.log(`  [ERROR] ${file} (download failed after ${MAX_RETRIES} attempts)`);
+        console.log(`          URL: ${url}`);
+        return { success: false, failedFile: file, downloadedCount: successCount };
       }
+    }
+    return { success: true, downloadedCount: successCount };
+  }
+
+  // First attempt: use specified version
+  const initialVersion = getVersion();
+  console.log(`Attempting download from version: ${initialVersion}\n`);
+
+  let result = downloadFiles(initialVersion);
+
+  // If failed and not already on main, fallback to main and retry ALL files
+  if (!result.success && initialVersion !== 'main') {
+    console.log(`\n[HINT] Version ${initialVersion} may not exist yet.`);
+    console.log(`[FALLBACK] Clearing partial downloads and retrying all files from 'main' branch...\n`);
+
+    // Clear temp directory to ensure consistency
+    fs.readdirSync(tempDir).forEach(entry => {
+      const entryPath = path.join(tempDir, entry);
+      fs.rmSync(entryPath, { recursive: true, force: true });
+    });
+
+    process.env.CODE_ALCHEMIST_FALLBACK = 'true';
+    result = downloadFiles('main');
+
+    if (result.success) {
+      console.log(`\n[OK] Successfully downloaded all files from 'main' branch`);
     }
   }
 
-  if (successCount === files.length) {
+  if (result.success) {
     // Set executable permission on shell scripts
     const scriptDir = path.join(tempDir, 'scripts');
     if (fs.existsSync(scriptDir)) {
@@ -246,12 +259,8 @@ function performInstall(installDir, isUpdate) {
     console.log(`\n[OK] ${isUpdate ? 'Update' : 'Installation'} complete!`);
   } else {
     fs.rmSync(tempDir, { recursive: true, force: true });
-    console.log(`\n[ERROR] ${isUpdate ? 'Update' : 'Installation'} incomplete: ${files.length - successCount} file(s) failed.`);
-  }
-  console.log(`  Files installed: ${successCount}/${files.length}`);
-  console.log(`  Location: ${installDir}\n`);
-
-  if (successCount < files.length) {
+    console.log(`\n[ERROR] ${isUpdate ? 'Update' : 'Installation'} incomplete: failed to download all files.`);
+    console.log(`  Location: ${installDir}\n`);
     process.exit(1);
   }
 
