@@ -1,6 +1,6 @@
-# CodeAlchemist Installer
+# Code Alchemist Installer
 
-npx 安装器 for CodeAlchemist
+npx 安装器 for Code Alchemist
 
 ## 使用方法
 

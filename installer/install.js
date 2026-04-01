@@ -50,7 +50,7 @@ function parseArgs() {
 
 function showHelp() {
   console.log(`
-CodeAlchemist Installer
+Code Alchemist Installer
 
 Usage: npx code-alchemist [options]
 
@@ -87,7 +87,7 @@ async function interactiveInstall(isUpdate) {
     const projectRoot = findProjectRoot();
     const globalDir = getGlobalSkillsDir();
 
-    console.log('\n=== CodeAlchemist Installation ===\n');
+    console.log('\n=== Code Alchemist Installation ===\n');
 
     const projectInstallDir = projectRoot ? path.join(projectRoot, '.agents', 'skills', 'code-alchemist') : null;
     const globalInstallDir = path.join(globalDir, 'code-alchemist');
@@ -125,7 +125,7 @@ async function interactiveInstall(isUpdate) {
     const exists = locationChoice === '1' ? projectExists : globalExists;
 
     if (exists && !isUpdate) {
-      const answer = await askQuestion(rl, '\nCodeAlchemist already installed here. Update? (y/n): ');
+      const answer = await askQuestion(rl, '\nCode Alchemist already installed here. Update? (y/n): ');
       if (answer.toLowerCase() !== 'y') {
         console.log('Installation cancelled.');
         safeClose();
@@ -161,7 +161,7 @@ function downloadWithRetry(url, localPath, maxRetries = MAX_RETRIES) {
 }
 
 function performInstall(installDir, isUpdate) {
-  console.log(`\n${isUpdate ? 'Updating' : 'Installing'} CodeAlchemist...`);
+  console.log(`\n${isUpdate ? 'Updating' : 'Installing'} Code Alchemist...`);
   console.log(`Location: ${installDir}\n`);
 
   const os = require('os');
