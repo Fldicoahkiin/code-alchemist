@@ -6,7 +6,7 @@ const path = require('path');
 const readline = require('readline');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
-const DEFAULT_VERSION = 'v1.1.0'; // Fallback version
+const DEFAULT_VERSION = 'v1.2.0'; // Fallback version
 
 function getVersion() {
   // Check for fallback flag (set when version download fails)
