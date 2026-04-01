@@ -194,10 +194,19 @@ function performInstall(installDir, isUpdate) {
     } else {
       console.log(`  [ERROR] ${file} (download failed after ${MAX_RETRIES} attempts)`);
       console.log(`          URL: ${url}`);
-      if (version !== 'main' && successCount === 0) {
+
+      // Try fallback to main branch for current file and subsequent files
+      if (version !== 'main') {
         console.log(`  [HINT] Version ${version} may not exist yet. Falling back to 'main' branch.`);
-        // Try fallback to main for all subsequent files
         process.env.CODE_ALCHEMIST_FALLBACK = 'true';
+
+        const fallbackUrl = `https://raw.githubusercontent.com/${REPO}/main/.agents/skills/code-alchemist/${file}`;
+        if (downloadWithRetry(fallbackUrl, localPath)) {
+          console.log(`  [OK] ${file} (fallback to main)`);
+          successCount++;
+        } else {
+          console.log(`  [ERROR] ${file} (fallback failed)`);
+        }
       }
     }
   }
