@@ -76,8 +76,10 @@ Claude will:
 1. Run the analysis script
 2. Read representative code samples
 3. Generate a complete Skill
-4. Ask for installation preferences
-5. Install and confirm
+4. Install to current project (default)
+5. Confirm completion
+
+> **Note**: By default, installs directly to the current project. To customize installation location, explicitly state "install globally" or "ask before installing" in your instruction.
 
 ### Manual Analysis (Advanced)
 
