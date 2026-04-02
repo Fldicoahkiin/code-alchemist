@@ -65,10 +65,39 @@ From `live_files.txt`, read 3-5 representative files based on:
 
 Look for: naming patterns, import order, state management, error handling, file organization.
 
-### Step 4: Generate Skill
-Create a complete, installable skill with these files:
+### Step 4: Generate Output
+Based on the user's goal, produce **one** of the following deliverables (see `references/output-contract.md` for details):
 
-#### 4.1 Determine Installation Preferences
+#### Option A: Author Profile (`style-profile.md`)
+Use when: User wants a readable style analysis without creating a reusable skill.
+
+Structure:
+- Scope (repo, author, time range)
+- High-Confidence Rules (evidence-backed patterns)
+- Tentative Observations (lower confidence, marked as such)
+- Anti-Patterns (what to avoid)
+- Evidence Index (traceability to commits/files)
+
+#### Option B: AGENTS Snippet
+Use when: User wants rules added to repository collaboration guidance.
+
+Structure:
+- Code Alchemist Author Style Rules
+- Naming, Structure, Error handling, Testing conventions
+- Anti-patterns
+
+#### Option C: Copilot Instructions Snippet
+Use when: User wants rules added to `.github/copilot-instructions.md`.
+
+Structure:
+- Apply the <author> style in these areas
+- Scope, Naming, Module boundaries, Error handling, Testing
+- Do not over-apply guidelines
+
+#### Option D: Reusable Skill (SKILL.md + evals.json) ⭐ Default
+Use when: User wants a reusable, installable skill. This is the **default** when no specific format is requested.
+
+**4.1 Determine Installation Preferences**
 
 **Default behavior (use without asking):**
 - **Location**: Current project `.agents/skills/`
@@ -76,7 +105,7 @@ Create a complete, installable skill with these files:
 
 Only ask the user if they explicitly mention wanting a different location (global) or a custom name. Otherwise, proceed directly with the defaults.
 
-#### 4.2 Create Directory Structure (Staging)
+**4.2 Create Directory Structure (Staging)**
 
 First generate the skill to a staging directory, then install to the target location:
 
@@ -89,7 +118,7 @@ First generate the skill to a staging directory, then install to the target loca
 
 The staging directory allows review before final installation.
 
-#### 4.3 Generate SKILL.md
+**4.3 Generate SKILL.md**
 Use this template (adapt content based on analysis):
 
     ---
