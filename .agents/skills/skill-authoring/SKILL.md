@@ -44,7 +44,7 @@ metadata:
 ```yaml
 ---
 name: skill-name                          # 小写字母、数字、连字符
-description: '简短描述，说明用途和触发时机。'  # 10-1024 字符，需引号
+description: '简短描述，说明用途和触发时机。'  # 1-1024 字符，需引号
 license: MIT                              # 开源许可证
 metadata:
   author: Your Name
@@ -56,49 +56,49 @@ metadata:
 
 **关键规则**：
 - `name`：只能使用小写字母、数字、连字符
-- `description`：必须加引号，长度 10-1024 字符，清晰说明何时使用该 skill
+- `description`：必须加引号，长度 1-1024 字符，清晰说明何时使用该 skill
 - `description` 是第一段 frontmatter 的 description，不要被示例代码中的 frontmatter 干扰
 
 ### Body 内容
 
-```markdown
-# Skill 标题
+**示例结构：**
 
-## When to Use / 何时使用
+    # Skill 标题
 
-- 触发条件 1
-- 触发条件 2
+    ## When to Use / 何时使用
 
-## 核心工作流
+    - 触发条件 1
+    - 触发条件 2
 
-1. 步骤一
-2. 步骤二
-3. 步骤三
+    ## 核心工作流
 
-## 规则 / Patterns
+    1. 步骤一
+    2. 步骤二
+    3. 步骤三
 
-### 分类一
-- 规则 1
-- 规则 2
+    ## 规则 / Patterns
 
-### 分类二
-```bash
-# 代码示例
-```
+    ### 分类一
+    - 规则 1
+    - 规则 2
 
-## Anti-Patterns（禁止做的事）
+    ### 分类二
+    ```bash
+    # 代码示例
+    ```
 
-- 不要做 X
-- 避免 Y
+    ## Anti-Patterns（禁止做的事）
 
-## Scope（适用范围）
+    - 不要做 X
+    - 避免 Y
 
-Apply to:
-- `path/pattern/**/*`
+    ## Scope（适用范围）
 
-Do not over-apply to:
-- `excluded/pattern/**/*`
-```
+    Apply to:
+    - `path/pattern/**/*`
+
+    Do not over-apply to:
+    - `excluded/pattern/**/*`
 
 ## 验证 Skill
 

@@ -7,7 +7,7 @@
       "expected_output": "生成符合规范的 SKILL.md，包含 frontmatter、When to Use、工作流和规则",
       "assertions": [
         "包含 name, description, license 的 frontmatter",
-        "description 长度在 10-1024 字符之间且带引号",
+        "description 长度在 1-1024 字符之间且带引号",
         "有 H1 标题",
         "有 When to Use 章节",
         "有清晰的规则说明"
