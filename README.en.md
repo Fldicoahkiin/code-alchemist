@@ -135,21 +135,19 @@ The core analysis script `distill_author.sh` is written in Bash (compatible with
 4. **Performance**: Efficient text processing for large repositories
 5. **Simplicity**: Single file, no package management needed
 
-## Interactive Installation
+## Installation
 
-When generating a Skill, Claude Code will ask:
+By default, Code Alchemist installs the generated skill directly to the current project:
 
-> **Analysis complete. Ready to install the skill. Please confirm:**
->
-> **1. Install Location** - default: current project
-> - [x] Current project ./.agents/skills/
-> - [ ] Claude global ~/.claude/skills/
-> - [ ] Other path _____________
->
-> **2. Skill Name** - default: `<author>-style`
-> _____________
+```bash
+# Skill installed to ./.agents/skills/<author>-style/
+# Ready to use immediately
+```
 
-After confirmation, the Skill is installed and ready to use:
+To customize installation, explicitly state in your instruction:
+- "Install to Claude global" → `~/.claude/skills/`
+- "Ask me before installing" → Interactive confirmation
+- "Generate without installing" → Output to specified directory
 
 ```
 使用 <author>-style 创建一个用户列表组件

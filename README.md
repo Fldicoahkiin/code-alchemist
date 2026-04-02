@@ -135,21 +135,19 @@ bash .agents/skills/code-alchemist/scripts/distill_author.sh \
 4. **性能**: 对大型仓库进行高效的文本处理
 5. **简洁**: 单文件，无需包管理
 
-## 交互式安装
+## 安装
 
-生成 Skill 时，Claude Code 会询问：
+默认情况下，Code Alchemist 会将生成的 skill 直接安装到当前项目：
 
-> **分析完成。准备安装 skill，请确认：**
->
-> **1. 安装位置** - 默认: 当前项目
-> - [x] 当前项目 ./.agents/skills/
-> - [ ] Claude 全局 ~/.claude/skills/
-> - [ ] 其他路径 _____________
->
-> **2. Skill 名称** - 默认: `<author>-style`
-> _____________
+```bash
+# Skill 已安装到 ./.agents/skills/<author>-style/
+# 可立即使用
+```
 
-确认后，Skill 即安装完成，可立即使用：
+如需自定义安装，可在指令中明确说明：
+- "安装到 Claude 全局" → `~/.claude/skills/`
+- "安装前先问我" → 交互式确认
+- "只生成不安装" → 输出到指定目录
 
 ```
 使用 <author>-style 创建一个用户列表组件
