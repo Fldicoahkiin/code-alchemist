@@ -4,9 +4,12 @@
   "description": "Code Alchemist - Distill developer coding style from Git history into Claude Code Skills (Repository package)",
   "private": true,
   "scripts": {
-    "validate": "bash .agents/skills/code-alchemist/scripts/validate_skill.sh",
+    "validate": "bash scripts/validate_all.sh",
+    "validate:code-alchemist": "bash .agents/skills/code-alchemist/scripts/validate_skill.sh",
+    "validate:skill-authoring": "bash .agents/skills/skill-authoring/scripts/validate_skill.sh",
     "test": "bash tests/run_tests.sh",
-    "install:skill": "node installer/install.js"
+    "install:skill": "node installer/install.js",
+    "checksums": "bash .agents/skills/code-alchemist/scripts/generate_checksums.sh && bash .agents/skills/skill-authoring/scripts/generate_checksums.sh"
   },
   "keywords": [
     "claude-code",
