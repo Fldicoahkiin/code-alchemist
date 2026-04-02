@@ -15,3 +15,11 @@ else
     echo "[ERROR] smoke_test.sh not found"
     exit 1
 fi
+
+# Run validator regression tests
+if [[ -f "$SCRIPT_DIR/validator_regression_test.sh" ]]; then
+    bash "$SCRIPT_DIR/validator_regression_test.sh"
+else
+    echo "[ERROR] validator_regression_test.sh not found"
+    exit 1
+fi
