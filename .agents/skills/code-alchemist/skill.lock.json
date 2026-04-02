@@ -1,10 +1,10 @@
 {
   "name": "code-alchemist",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "lockfileVersion": 1,
   "skill": {
     "name": "code-alchemist",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "entry": "SKILL.md",
     "files": [
       "SKILL.md",
@@ -22,16 +22,16 @@
       "bash": ">=3.2.0"
     },
     "checksums": {
-      "SKILL.md": "d1b074a53fed0a05fbe1a3843a6289397d4d730a92b9e307d9d31a0e6b781d44",
+      "SKILL.md": "cdeacdf4b537dae0a350a412fe03a0d6653e083a28ba29b213bd1aef79e9baeb",
       "scripts/distill_author.sh": "375a729cffd89e271ee39f8105c70104be35b5720b5f4f982136a4edae69dc23",
       "scripts/validate_skill.sh": "a864a1127a10357f5448d2fc458992bcd0cd89e38885bdd9a9cdbe22fc4bd5d9",
+      "scripts/generate_checksums.sh": "71c92789e37bfa3d3253dfde467124fa156648dd2a7400b1167291016e3e4097",
       "references/distillation-dimensions.md": "194c862051362bb1a368241b4a2d0723fe4a85b41a31fa03f0c6de686c80ea5d",
       "references/output-contract.md": "42bd2fd7cdc86d7c7e9338592e4b345a646341aa222fe040ab030b9153d58367",
       "templates/skill-template.md": "cefb199b4c295296cb3fc14d3362a1dbe6be4d731e7160d930c3aca37c72fbac",
       "templates/agents-snippet.md": "8800b573e97b2bf14bc0a78be0571761584cc8bf6cc7c2d904f0083b7c36deb0",
-      "evals/evals.json": "ea29aae660141f7c7285b6eeee42f829146342d0600ec5d4e29fb0f89fe9678f",
-      "scripts/generate_checksums.sh": "71c92789e37bfa3d3253dfde467124fa156648dd2a7400b1167291016e3e4097"
+      "evals/evals.json": "ea29aae660141f7c7285b6eeee42f829146342d0600ec5d4e29fb0f89fe9678f"
     }
   },
-  "generated": "2026-04-02T10:33:10Z"
+  "generated": "2026-04-02T15:17:57Z"
 }

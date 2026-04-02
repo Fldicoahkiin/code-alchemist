@@ -7,7 +7,7 @@ const readline = require('readline');
 const crypto = require('crypto');
 
 const REPO = 'Fldicoahkiin/code-alchemist';
-const DEFAULT_VERSION = 'v1.2.0'; // Fallback version
+const DEFAULT_VERSION = 'v1.3.0'; // Fallback version
 
 function getVersion() {
   // Check for fallback flag (set when version download fails)
