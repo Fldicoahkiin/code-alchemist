@@ -92,53 +92,51 @@ The staging directory allows review before final installation.
 #### 4.3 Generate SKILL.md
 Use this template (adapt content based on analysis):
 
-```markdown
----
-name: <skill-name>
-description: 'Code like <author> - [brief description of their style]. Use when writing [language/framework] code that should match their conventions in [project type].'
----
+    ---
+    name: <skill-name>
+    description: 'Code like <author> - [brief description of their style]. Use when writing [language/framework] code that should match their conventions in [project type].'
+    ---
 
-# <author> Coding Style
+    # <author> Coding Style
 
-## Naming Conventions
+    ## Naming Conventions
 
-### [Components/Functions/Types]
-- [Pattern 1 with example]
-- [Pattern 2 with example]
+    ### [Components/Functions/Types]
+    - [Pattern 1 with example]
+    - [Pattern 2 with example]
 
-## Code Organization
+    ## Code Organization
 
-### Imports
-1. [Import order rule]
-2. [Import order rule]
+    ### Imports
+    1. [Import order rule]
+    2. [Import order rule]
 
-### File Structure
-- [Rule 1]
-- [Rule 2]
+    ### File Structure
+    - [Rule 1]
+    - [Rule 2]
 
-## Patterns
+    ## Patterns
 
-### [Category]
-```[language]
-// Example code showing the pattern
-```
+    ### [Category]
+    ```[language]
+    // Example code showing the pattern
+    ```
 
-## Anti-Patterns
+    ## Anti-Patterns
 
-- Do not [anti-pattern 1]
-- Do not [anti-pattern 2]
+    - Do not [anti-pattern 1]
+    - Do not [anti-pattern 2]
 
-## Applicability
+    ## Applicability
 
-Apply to:
-- `path/pattern/**/*`
+    Apply to:
+    - `path/pattern/**/*`
 
-Do not over-apply to:
-- `excluded/pattern/**/*`
+    Do not over-apply to:
+    - `excluded/pattern/**/*`
 
----
-*Distilled from [N] commits ([+additions]/-[deletions]) in [repo]*
-```
+    ---
+    *Distilled from [N] commits ([+additions]/-[deletions]) in [repo]*
 
 #### 4.4 Generate evals.json
 Create at least 3 test cases:
