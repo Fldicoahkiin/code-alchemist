@@ -9,6 +9,7 @@
     "files": [
       "SKILL.md",
       "scripts/validate_skill.sh",
+      "scripts/generate_checksums.sh",
       "evals/evals.json"
     ],
     "dependencies": {

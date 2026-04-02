@@ -10,6 +10,7 @@
       "SKILL.md",
       "scripts/distill_author.sh",
       "scripts/validate_skill.sh",
+      "scripts/generate_checksums.sh",
       "references/distillation-dimensions.md",
       "references/output-contract.md",
       "templates/skill-template.md",
