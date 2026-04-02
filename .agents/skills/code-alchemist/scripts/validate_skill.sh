@@ -5,6 +5,7 @@ set -e
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL_FILE="$SKILL_DIR/SKILL.md"
+PARENT_DIR=$(basename "$SKILL_DIR")
 
 SPEC_ERRORS=0
 WARNINGS=0
@@ -37,6 +38,21 @@ if [[ -z "$NAME" ]]; then
 elif [[ "$NAME" =~ [^a-z0-9-] ]]; then
     echo "[SPEC ERROR] Name '$NAME' contains invalid characters (only lowercase letters, numbers, and hyphens allowed)"
     SPEC_ERRORS=$((SPEC_ERRORS + 1))
+elif [[ ${#NAME} -gt 63 ]]; then
+    echo "[SPEC ERROR] Name '$NAME' is too long (${#NAME} chars, max 63)"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+elif [[ "$NAME" =~ ^- ]]; then
+    echo "[SPEC ERROR] Name '$NAME' cannot start with hyphen"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+elif [[ "$NAME" =~ -$ ]]; then
+    echo "[SPEC ERROR] Name '$NAME' cannot end with hyphen"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+elif [[ "$NAME" =~ -- ]]; then
+    echo "[SPEC ERROR] Name '$NAME' cannot contain consecutive hyphens"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+elif [[ "$NAME" != "$PARENT_DIR" ]]; then
+    echo "[SPEC ERROR] Name '$NAME' must match parent directory name '$PARENT_DIR'"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
 else
     echo "[OK] Name field valid: $NAME"
 fi
@@ -48,9 +64,6 @@ DESC_LEN=${#DESCRIPTION}
 if [[ -z "$DESCRIPTION" ]]; then
     echo "[SPEC ERROR] Missing 'description' field in frontmatter"
     SPEC_ERRORS=$((SPEC_ERRORS + 1))
-elif [[ $DESC_LEN -lt 10 ]]; then
-    echo "[SPEC ERROR] Description too short ($DESC_LEN chars, minimum 10)"
-    SPEC_ERRORS=$((SPEC_ERRORS + 1))
 elif [[ $DESC_LEN -gt 1024 ]]; then
     echo "[SPEC ERROR] Description too long ($DESC_LEN chars, maximum 1024)"
     SPEC_ERRORS=$((SPEC_ERRORS + 1))
@@ -60,9 +73,44 @@ fi
 
 # Check description is quoted
 DESC_LINE=$(awk '/^---$/ {found++} found==1 && /^description:/ {print; exit}' "$SKILL_FILE")
-if ! echo "$DESC_LINE" | grep -q "[\\\"']"; then
+if ! echo "$DESC_LINE" | grep -qE "[\"']"; then
     echo "[WARNING] Description should be wrapped in single or double quotes"
     WARNINGS=$((WARNINGS + 1))
+fi
+
+# Check license field
+LICENSE=$(awk '/^---$/ {found++} found==1 && /^license:/ {gsub(/^license:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE" | tr -d ' ')
+if [[ -z "$LICENSE" ]]; then
+    echo "[SPEC ERROR] Missing 'license' field in frontmatter"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+else
+    echo "[OK] License field valid: $LICENSE"
+fi
+
+# Check metadata fields
+META_AUTHOR=$(awk '/^---$/ {found++} found==1 && /^metadata:/ {found_meta=1} found==1 && found_meta && /author:/ {gsub(/.*author:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE")
+META_VERSION=$(awk '/^---$/ {found++} found==1 && /^metadata:/ {found_meta=1} found==1 && found_meta && /version:/ {gsub(/.*version:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE")
+META_TAGS=$(awk '/^---$/ {found++} found==1 && /^metadata:/ {found_meta=1} found==1 && found_meta && /tags:/ {gsub(/.*tags:[[:space:]]*/, ""); print; exit}' "$SKILL_FILE")
+
+if [[ -z "$META_AUTHOR" ]]; then
+    echo "[SPEC ERROR] Missing 'metadata.author' field in frontmatter"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+else
+    echo "[OK] Metadata author field valid: $META_AUTHOR"
+fi
+
+if [[ -z "$META_VERSION" ]]; then
+    echo "[SPEC ERROR] Missing 'metadata.version' field in frontmatter"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+else
+    echo "[OK] Metadata version field valid: $META_VERSION"
+fi
+
+if [[ -z "$META_TAGS" ]]; then
+    echo "[SPEC ERROR] Missing 'metadata.tags' field in frontmatter"
+    SPEC_ERRORS=$((SPEC_ERRORS + 1))
+else
+    echo "[OK] Metadata tags field valid: $META_TAGS"
 fi
 
 # Check for required sections
