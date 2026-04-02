@@ -6,7 +6,7 @@ set -e
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOCK_FILE="$SKILL_DIR/skill.lock.json"
 
-echo "Generating checksums for Code Alchemist..."
+echo "Generating checksums for skill-authoring..."
 
 # Read current lock file to get files list
 if [[ ! -f "$LOCK_FILE" ]]; then
@@ -38,7 +38,7 @@ for file_path in files:
         print(f"  [WARN] {file_path} not found, skipping")
 
 # Also include the scripts that are tracked but may not be in files list
-script_files = ['scripts/distill_author.sh', 'scripts/validate_skill.sh', 'scripts/generate_checksums.sh']
+script_files = ['scripts/validate_skill.sh', 'scripts/generate_checksums.sh']
 for script in script_files:
     if script not in checksums:
         full_path = os.path.join('$SKILL_DIR', script)

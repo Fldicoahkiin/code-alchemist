@@ -15,9 +15,11 @@
       "bash": ">=3.2.0"
     },
     "checksums": {
-      "SKILL.md": "11680c5684000b7eecdbe8fb99cb44b6f02fb9e118c774d2e782a830ec4977d9",
-      "scripts/validate_skill.sh": "5d7316da19a406b2f062e63efa21d2c7f18ad69ed4cab9bf6e3a147902a0564a"
+      "SKILL.md": "61e71889bf5410cffa81a657d0414f39813541725f8ae7ba148bb7bbe6162ead",
+      "scripts/validate_skill.sh": "60c9d66618c41819b63826da04480f503808200eae08cb5afa74a5c09c2b81e7",
+      "evals/evals.json": "833c5a0a6d4b899cba96db8b7a0a9dc4a9e8daf40b00b31f8d77cb8a458e0bc5",
+      "scripts/generate_checksums.sh": "1d0ae72bcd55a51c12743862691b4124a00e60cfeb7f9f0435ec445e8740591d"
     }
   },
-  "generated": "2026-03-31T00:00:00Z"
+  "generated": "2026-04-02T10:54:24Z"
 }
