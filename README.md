@@ -236,7 +236,7 @@ code-alchemist/
 ### 分析 React 项目资深开发者的风格
 
 ```bash
-bash scripts/distill_author.sh \
+bash .agents/skills/code-alchemist/scripts/distill_author.sh \
   --repo ~/projects/awesome-react-app \
   --author "senior-dev@company.com" \
   --include "src/components/**" \

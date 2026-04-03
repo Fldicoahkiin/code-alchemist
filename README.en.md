@@ -236,7 +236,7 @@ Based on `references/distillation-dimensions.md`, we extract developer style acr
 ### Analyzing a Senior React Developer's Style
 
 ```bash
-bash scripts/distill_author.sh \
+bash .agents/skills/code-alchemist/scripts/distill_author.sh \
   --repo ~/projects/awesome-react-app \
   --author "senior-dev@company.com" \
   --include "src/components/**" \
