@@ -15,7 +15,8 @@
       "references/output-contract.md",
       "templates/skill-template.md",
       "templates/agents-snippet.md",
-      "evals/evals.json"
+      "evals/evals.json",
+      "agents/openai.yaml"
     ],
     "dependencies": {
       "git": ">=2.0.0",
@@ -30,7 +31,8 @@
       "references/output-contract.md": "42bd2fd7cdc86d7c7e9338592e4b345a646341aa222fe040ab030b9153d58367",
       "templates/skill-template.md": "cefb199b4c295296cb3fc14d3362a1dbe6be4d731e7160d930c3aca37c72fbac",
       "templates/agents-snippet.md": "8800b573e97b2bf14bc0a78be0571761584cc8bf6cc7c2d904f0083b7c36deb0",
-      "evals/evals.json": "ea29aae660141f7c7285b6eeee42f829146342d0600ec5d4e29fb0f89fe9678f"
+      "evals/evals.json": "ea29aae660141f7c7285b6eeee42f829146342d0600ec5d4e29fb0f89fe9678f",
+      "agents/openai.yaml": "cea8a0af669d74bf4e60739fe9fba283de0cb71551545f625711feac2b5423ee"
     }
   },
   "generated": "2026-04-02T15:17:57Z"

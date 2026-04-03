@@ -178,7 +178,8 @@ function performInstall(installDir, isUpdate) {
     'references/distillation-dimensions.md',
     'references/output-contract.md',
     'templates/skill-template.md',
-    'templates/agents-snippet.md'
+    'templates/agents-snippet.md',
+    'agents/openai.yaml'
   ];
 
   function downloadFiles(version) {
