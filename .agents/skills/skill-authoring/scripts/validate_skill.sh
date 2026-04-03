@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 # Validate SKILL.md against Agent Skills specification
+# Usage: validate_skill.sh [path/to/skill/directory]
 
 set -e
 
-SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Allow validating a specific skill directory, default to self
+if [[ -n "$1" ]]; then
+    SKILL_DIR="$(cd "$1" && pwd)"
+else
+    SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
+
 SKILL_FILE="$SKILL_DIR/SKILL.md"
 PARENT_DIR=$(basename "$SKILL_DIR")
 

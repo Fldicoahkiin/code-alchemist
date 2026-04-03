@@ -102,16 +102,30 @@ metadata:
 
 ## 验证 Skill
 
-运行验证脚本检查规范符合度：
+### 验证当前 Skill（自验证）
+
+在 skill 目录下运行：
 
 ```bash
-bash .agents/skills/skill-authoring/scripts/validate_skill.sh
+bash scripts/validate_skill.sh
 ```
 
-验证项：
+### 验证其他 Skill
+
+验证指定路径的 skill：
+
+```bash
+bash .agents/skills/skill-authoring/scripts/validate_skill.sh path/to/your-skill
+```
+
+**重要**：如果不提供路径参数，脚本只会验证它自己（skill-authoring），而不是你新建的 skill。
+
+### 验证项
+
 - Frontmatter 格式正确
-- Name 字段合法
-- Description 长度和引号
+- Name 字段合法（小写字母、数字、连字符；与目录名一致）
+- Description 长度 1-1024 字符且带引号
+- License 和 metadata 字段完整
 - H1 标题存在
 - Body 行数不超过 500（推荐）
 - evals.json 存在且合法
